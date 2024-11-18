@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar Coche - Malaga Supercars</title>
+    <link rel="stylesheet" href="MalagaSupercarsForm.css">
+</head>
+<body>
+    <header>
+        <a href="http://localhost/Examen%203º%20evaluación/MalagaSupercarsHome.php" class="logo">
+            <img src="assets/images/logo/MalagaSupercarsLogo.png" alt="logo">
+        </a>
+
+        <div class="icono-menu">
+            <img src="assets/images/icons/menu.png" id="icono-menu">
+        </div>
+        
+        <div class="cont-menu" id="menu">
+            <ul>
+                <li>Inicio</li>
+                <li>Sobre Nosotros</li>
+                <li>Contacto</li>
+                <li>Publicar Coche</li>
+                <li>Cuenta</li>
+            </ul>   
+        </div>
+
+        <nav>
+            <div>
+                <a href="http://localhost/Examen%203º%20evaluación/MalagaSupercarsHome.php" class="nav-link">Inicio</a>
+            </div>
+            <div>
+                <a href="http://localhost/Examen%203º%20evaluación/MalagaSupercarsAboutUs.html" class="nav-link">Sobre Nosotros</a>
+            </div>
+            <div>
+                <a href="http://localhost/Examen%203º%20evaluación/MalagaSupercarsContact.html" class="nav-link">Contacto</a>
+            </div>
+            <div>
+                <a href="http://localhost/Examen%203%C2%BA%20evaluaci%C3%B3n/MalagaSupercarsForm4.html" class="nav-link">Publicar Coche</a>
+            </div>
+            <div class="cuenta">
+                <img src="assets/images/icons/boton-de-cuenta-redonda-con-usuario-dentro.png" alt="">
+                <a href="http://localhost/Examen%203º%20evaluación/MalagaSupercarsForm.html" class="nav-link">Cuenta</a> 
+            </div>
+        </nav>
+    </header>
+
+    <div class="contenedor-formularios">
+        <div class="formulario">
+            <h1>Publica tu Coche</h1>
+            <form method="post" action="MalagaSupercarsForm4.php">
+                <input type="hidden" name="action" value="register">
+                <div class="user">
+                    <input type="text" name="marca" required>
+                    <label>Marca</label>
+                </div>
+                <div class="user">
+                    <input type="text" name="modelo" required>
+                    <label>Modelo</label>
+                </div>
+                <div class="user">
+                    <input type="number" name="ano" required>
+                    <label>Año</label>
+                </div>
+                <div class="user">
+                    <input type="number" name="precio" step="0.01" required>
+                    <label>Precio</label>
+                </div>
+                <div class="user">
+                    <textarea name="descripcion" required></textarea>
+                    <label>Descripción</label>
+                </div>
+                <div class="user">
+                    <input type="text" name="imagen" required>
+                    <label>URL de la imagen</label>
+                </div>
+                <button type="submit">Publicar Coche</button>
+            </form>
+        </div>
+        
+        <div class="formulario">
+            <h1>Eliminar un Coche</h1>
+            <form method="post" action="MalagaSupercarsForm4.php">
+                <input type="hidden" name="action" value="delete">
+                <div class="user">
+                    <input type="text" name="marca" required>
+                    <label>Marca del Coche a Eliminar</label>
+                </div>
+                <div class="user">
+                    <input type="text" name="modelo" required>
+                    <label>Modelo del Coche a Eliminar</label>
+                </div>
+                <button type="submit">Eliminar Coche</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="contenedor-footer">
+            <div class="footer-columna">
+                <img class="logo-footer" src="assets\images\logo\MalagaSupercarsLogoF.png" alt="">
+                <div class="footer-parrafos">
+                    <h3>Encuéntanos</h3>
+                    <p>Urb. La Alcazaba</p>
+                    <p>Avenida de la Aurora s/n, 29002</p>
+                    <p>Centro, Málaga (Málaga).</p>
+                </div>  
+            </div>
+
+            <div class="servicios">
+                <h3>Servicios</h3>
+                <p>Alquiler</p>
+                <p>Preparaciones</p>
+                <p>Taller</p>
+                <p>Chapa y Pintura</p>
+                <p>Vinilos</p>
+                <p>Detallados</p>
+                <p>Arte</p>
+                <p>Conserje</p>
+            </div>
+
+            <div class="legal">
+                <h3>Legal</h3>
+                <p>Aviso legal</p>
+                <p>Tus datos seguros</p>
+                <p>Protección de datos</p>
+                <p>Política de cookies</p>
+            </div>
+
+            <div class="sociales">
+                <h3>Síguenos</h3>
+                <img class="logo-sociales" src="assets\images\social-icons\facebook.png" alt="">
+                <img class="logo-sociales" src="assets\images\social-icons\instagram.png" alt="">
+                <img class="logo-sociales" src="assets\images\social-icons\youtube.png" alt="">
+            </div>  
+        </div>
+    </footer>
+
+    <div class="derechos">
+        <p>© 2024 Malaga Supercars, todos los derechos reservados.</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
