@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `categorias` (
   `id_categoria` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(50) NOT NULL,
   `tipo` ENUM('evento', 'tarea') NOT NULL,
+  `color` VARCHAR(7),
   PRIMARY KEY (`id_categoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -48,4 +49,14 @@ CREATE TABLE IF NOT EXISTS `tareas` (
   FOREIGN KEY (`id_usuario_fk`) REFERENCES `usuarios`(`id_usuario`) ON DELETE CASCADE,
   FOREIGN KEY (`id_categoria_fk`) REFERENCES `categorias`(`id_categoria`) ON DELETE RESTRICT,
   FOREIGN KEY (`id_evento_fk`) REFERENCES `eventos`(`id_evento`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `recordatorios` (
+  `id_recordatorio` INT NOT NULL AUTO_INCREMENT,
+  `id_usuario_fk` INT NOT NULL,
+  `mensaje` VARCHAR(255) NOT NULL,
+  `fecha_hora` DATETIME NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_recordatorio`),
+  FOREIGN KEY (`id_usuario_fk`) REFERENCES `usuarios`(`id_usuario`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

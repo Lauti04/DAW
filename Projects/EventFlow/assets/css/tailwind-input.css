@@ -1,1 +1,82 @@
 @import "tailwindcss";
+
+/* Variables de color y tipografía */
+:root {
+    --primary: #007ACC;
+    --accent: #FFA500;
+    --secondary: #F4F4F4;
+    --dark: #121212;
+    --text-dark: #333333;
+    --text-light: #E0E0E0;
+
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Roboto', sans-serif;
+}
+
+.dark {
+    --primary: #005A9E;
+    --accent: #FF8C00;
+    --secondary: #1A1A1A;
+    --dark: #000000;
+    --text-dark: #CCCCCC;
+    --text-light: #FFFFFF;
+}
+
+/* Base styles */
+@layer base {
+    body {
+        font-family: var(--font-body);
+        color: var(--text-dark);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+    }
+
+    h1 {
+        @apply text-4xl font-bold;
+    }
+
+    h2 {
+        @apply text-3xl font-semibold;
+    }
+
+    h3 {
+        @apply text-2xl font-semibold;
+    }
+
+    h4 {
+        @apply text-xl font-medium;
+    }
+
+    h5 {
+        @apply text-lg font-medium;
+    }
+
+    h6 {
+        @apply text-base font-normal;
+    }
+}
+
+@layer utilities {
+    .bg-primary {
+      background-color: var(--primary);
+    }
+    .bg-accent {
+      background-color: var(--accent);
+    }
+    .text-primary {
+      color: var(--primary);
+    }
+    .text-accent {
+      color: var(--accent);
+    }
+  
+    .hover\:bg-accent:hover {
+      background-color: var(--accent);
+    }
+
+    .bg-dark {
+        background-color: var(--dark);
+    }
+  }
