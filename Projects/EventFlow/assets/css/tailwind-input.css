@@ -1,82 +1,291 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Variables de color y tipografía */
 :root {
-    --primary: #007ACC;
-    --accent: #FFA500;
-    --secondary: #F4F4F4;
-    --dark: #121212;
-    --text-dark: #333333;
-    --text-light: #E0E0E0;
+  --primary: #007acc;
+  --accent: #ffa500;
+  --secondary: #f4f4f4;
+  --dark: #121212;
+  --text-dark: #333333;
+  --text-light: #e0e0e0;
+  --card-bg: #ffffff;
 
-    --font-heading: 'Montserrat', sans-serif;
-    --font-body: 'Roboto', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'Roboto', sans-serif;
 }
 
 .dark {
-    --primary: #005A9E;
-    --accent: #FF8C00;
-    --secondary: #1A1A1A;
-    --dark: #000000;
-    --text-dark: #CCCCCC;
-    --text-light: #FFFFFF;
+  --primary: #005a9e;
+  --accent: #ff8c00;
+  --secondary: #1a1a1a;
+  --dark: #000000;
+  --text-dark: #cccccc;
+  --text-light: #ffffff;
+  --card-bg: #2e2e2e;
 }
 
 /* Base styles */
 @layer base {
-    body {
-        font-family: var(--font-body);
-        color: var(--text-dark);
-    }
+  body {
+    font-family: var(--font-body);
+    color: var(--text-dark);
+  }
 
-    h1, h2, h3, h4, h5, h6 {
-        font-family: var(--font-heading);
-    }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+  }
 
-    h1 {
-        @apply text-4xl font-bold;
-    }
+  h1 {
+    @apply text-4xl font-bold;
+  }
 
-    h2 {
-        @apply text-3xl font-semibold;
-    }
+  h2 {
+    @apply text-3xl font-semibold;
+  }
 
-    h3 {
-        @apply text-2xl font-semibold;
-    }
+  h3 {
+    @apply text-2xl font-semibold;
+  }
 
-    h4 {
-        @apply text-xl font-medium;
-    }
+  h4 {
+    @apply text-xl font-medium;
+  }
 
-    h5 {
-        @apply text-lg font-medium;
-    }
+  h5 {
+    @apply text-lg font-medium;
+  }
 
-    h6 {
-        @apply text-base font-normal;
-    }
+  h6 {
+    @apply text-base font-normal;
+  }
+}
+
+/* Animaciones personalizadas */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 @layer utilities {
-    .bg-primary {
-      background-color: var(--primary);
-    }
-    .bg-accent {
-      background-color: var(--accent);
-    }
-    .text-primary {
-      color: var(--primary);
-    }
-    .text-accent {
-      color: var(--accent);
-    }
-  
-    .hover\:bg-accent:hover {
-      background-color: var(--accent);
-    }
+  /* Fondos */
+  .bg-primary {
+    background-color: var(--primary);
+  }
 
-    .bg-dark {
-        background-color: var(--dark);
+  .bg-accent {
+    background-color: var(--accent);
+  }
+
+  .bg-secondary {
+    background-color: var(--secondary);
+  }
+
+  .bg-dark {
+    background-color: var(--dark);
+  }
+
+  .bg-white {
+    background-color: #ffffff;
+  }
+
+  /* Utility para fondo de tarjeta */
+  .bg-card {
+    background-color: var(--card-bg);
+  }
+
+  /* Texto */
+  .text-white {
+    color: #ffffff;
+  }
+
+  .text-black {
+    color: var(--text-dark);
+  }
+
+  .text-primary {
+    color: var(--primary);
+  }
+
+  .text-accent {
+    color: var(--accent);
+  }
+
+  .text-text-dark {
+    color: var(--text-dark);
+  }
+
+  .text-text-light {
+    color: var(--text-light);
+  }
+
+  /* Fuentes */
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  /* Gradientes */
+  .from-primary {
+    --tw-gradient-from: var(--primary);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  }
+
+  .to-accent {
+    --tw-gradient-to: var(--accent);
+  }
+
+  /* Botones */
+  /* Animación para hover */
+  @keyframes hover-scale {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
     }
   }
+
+  /* Botón primario */
+  .btn-primary {
+    @apply text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 ease-in-out;
+    background-color: var(--primary);
+  }
+  .btn-primary:hover {
+    background-color: color-mix(in srgb, var(--primary) 90%, black 10%);
+    animation: hover-scale 0.3s ease-in-out;
+  }
+
+  /* Botón secundario (outline) */
+  .btn-secondary {
+    @apply font-medium py-3 px-6 rounded-lg transition-all duration-300 ease-in-out;
+    background-color: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+  }
+  .btn-secondary:hover {
+    background-color: var(--primary);
+    color: white;
+    animation: hover-scale 0.3s ease-in-out;
+  }
+
+  /* Botón terciario (accent) */
+  .btn-tertiary {
+    @apply text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 ease-in-out;
+    background-color: var(--accent);
+  }
+  .btn-tertiary:hover {
+    background-color: color-mix(in srgb, var(--accent) 90%, black 10%);
+    animation: hover-scale 0.3s ease-in-out;
+  }
+
+  /* Fade-up al scroll (solo CSS) */
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .fade-up {
+    animation: fade-up 0.8s ease-out forwards;
+  }
+  .delay-150 {
+    animation-delay: 150ms;
+  }
+
+  /* Animaciones */
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 2s ease-in-out infinite;
+  }
+
+  /* Scrollbar slim y con colores */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .scrollbar-thumb-primary::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thumb-primary::-webkit-scrollbar-track {
+    background: var(--secondary);
+  }
+  .scrollbar-thumb-primary::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 3px;
+  }
+}
+
+@layer components {
+  /* --- Hover solo en los que NO están activos --- */
+  .nav-link:not(.active):hover span {
+    @apply w-full;
+  }
+  /* Hover zoom en TODOS los enlaces (activos y no-activos) */
+  .nav-link:hover {
+    @apply scale-105;
+  }
+
+  /* --- Estado ACTIVE, sin span, negrita y subrayado --- 
+  /* .nav-link.active {
+    @apply font-semibold transition-all duration-300 ease-in-out;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+  }
+  /* Si cambias variables en dark, ya usa --primary o ajusta aquí si lo quieres 
+  .nav-link.active span {
+    display: none;
+  } */
+
+  /* --- Estado ACTIVE: negrita y color (la raya la gestiona utilities) --- */
+  .nav-link.active {
+    @apply font-semibold;
+    color: var(
+      --primary
+    ); /* mismo color, sin usar @apply */ /* sin border-bottom: todo el subrayado lo hace el <span> */
+  }
+  /* .nav-link.active span {
+    /* ancho completo para que ya se vea subrayado; al perder .active se anima a 0 
+    @apply w-full;
+  } */
+}
+
+@layer utilities {
+  /* --- Subrayado fijo para el enlace ACTIVO y sin animar al hacer hover --- */
+  .nav-link.active span {
+    width: 100%; /* anula w-0 */
+  }
+  .nav-link.active:hover span {
+    width: 100%; /* sigue fijo */
+    transition: none; /* evita que “latee” */
+  }
+}
