@@ -1,35 +1,74 @@
 <?php
+// backend/auth/login.php
+
+// 1) Errores en desarrollo (quitar en producción)
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
+// 2) Cabecera JSON + sesión
+header('Content-Type: application/json');
 session_start();
-require '../db.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+// 3) Conexión PDO (ajusta la ruta si tu db.php está en otro sitio)
+require __DIR__ . '/../db.php';
 
-    if (empty($email) || empty($password)) {
-        $_SESSION['error'] = 'Completa todos los campos.';
-        header('Location: ../../login.html');
+// 4) Solo POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode([
+      'success' => false,
+      'message' => 'Método no permitido'
+    ]);
+    exit;
+}
+
+// 5) Recoger y sanear datos
+$email    = trim($_POST['email']    ?? '');
+$password =           $_POST['password'] ?? '';
+
+// 6) Validaciones
+if (!$email || !$password) {
+    echo json_encode([
+      'success' => false,
+      'message' => 'Completa todos los campos'
+    ]);
+    exit;
+}
+
+try {
+    // 7) Buscar usuario por email
+    $stmt = $pdo->prepare(
+      "SELECT id_usuario, password 
+         FROM usuarios 
+        WHERE email = ?"
+    );
+    $stmt->execute([$email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user && password_verify($password, $user['password'])) {
+        // 8) Éxito → guardar sesión y devolver redirect
+        $_SESSION['id_usuario'] = $user['id_usuario'];
+        echo json_encode([
+          'success'  => true,
+          // la vista está en frontend/, así que dashboard.php debe vivir ahí:
+          'redirect' => 'home.php'
+        ]);
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT id_usuario, password FROM usuarios WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
+    // Si llegamos aquí, credenciales inválidas
+    echo json_encode([
+      'success' => false,
+      'message' => 'Credenciales inválidas'
+    ]);
+    exit;
 
-    if ($stmt->num_rows === 1) {
-        $stmt->bind_result($id, $hashed);
-        $stmt->fetch();
-
-        if (password_verify($password, $hashed)) {
-            $_SESSION['id_usuario'] = $id;
-            header('Location: ../../dashboard.php');
-            exit;
-        }
-    }
-
-    $_SESSION['error'] = 'Credenciales inválidas.';
-    header('Location: ../../login.html');
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode([
+      'success' => false,
+      'message' => 'Error de base de datos: ' . $e->getMessage()
+    ]);
     exit;
 }
-?>

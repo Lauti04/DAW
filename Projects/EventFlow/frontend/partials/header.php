@@ -14,7 +14,7 @@
 <header class="sticky top-0 z-50 bg-white dark:bg-white border-b border-gray-200 dark:border-gray-700 overflow-hidden">
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between overflow-hidden">
     <!-- Logo -->
-    <a href="#<?= $isLogged ? 'dashboard' : 'hero' ?>" class="flex-shrink-0">
+    <a href="home.php" class="flex-shrink-0">
       <img id="logo-light"
            src="../assets/img/logos/logo2.png"
            alt="EventFlow Logo"
@@ -66,17 +66,10 @@
 
       <!-- CTA desktop (>1090px) -->
       <div class="hidden [@media(min-width:1090px)]:flex items-center space-x-4">
-        <?php if (!$isLogged): ?>
-          <a href="login.php"
+          <a href="register_view.php"
              class="btn-primary px-4 py-2 text-[clamp(0.875rem,1vw,1rem)]">
             Únete
           </a>
-        <?php else: ?>
-          <a href="../backend/auth/logout.php"
-             class="btn-secondary px-4 py-2 text-[clamp(0.875rem,1vw,1rem)]">
-            Salir
-          </a>
-        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -103,17 +96,10 @@
         </a>
       <?php endforeach; ?>
       <div class="mt-4 text-right">
-        <?php if (!$isLogged): ?>
-          <a href="login.php"
+          <a href="register_view.php"
              class="btn-primary inline-block px-6 py-2 text-[clamp(0.875rem,1vw,1rem)]">
             Únete
           </a>
-        <?php else: ?>
-          <a href="../backend/auth/logout.php"
-             class="btn-secondary inline-block px-6 py-2 text-[clamp(0.875rem,1vw,1rem)]">
-            Salir
-          </a>
-        <?php endif; ?>
       </div>
     </nav>
   </div>

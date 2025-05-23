@@ -11,78 +11,81 @@ document.addEventListener('DOMContentLoaded', () => {
   const bannerLight = document.getElementById('banner-light');
   const bannerDark = document.getElementById('banner-dark');
 
-  const hamburgerSVG = btnMenu.innerHTML.trim();
+  // Guardamos el SVG de hamburguesa solo si existe el botón
+  const hamburgerSVG = btnMenu ? btnMenu.innerHTML.trim() : '';
   const closeSVG = `
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M6 18L18 6M6 6l12 12"/>
     </svg>`.trim();
 
+  // Función que aplica el tema y ajusta todos los elementos
   function applyTheme(theme) {
     const darkBg = getComputedStyle(root).getPropertyValue('--dark').trim();
+
     if (theme === 'dark') {
       root.classList.add('dark');
-      iconTheme.classList.replace('fa-moon', 'fa-sun');
-      headerEl.style.backgroundColor = darkBg;
-      mobileMen.style.backgroundColor = darkBg;
-      logoLight.style.display = 'none';
-      logoDark.style.display = 'block';
+      if (iconTheme) iconTheme.classList.replace('fa-moon', 'fa-sun');
+      if (headerEl) headerEl.style.backgroundColor = darkBg;
+      if (mobileMen) mobileMen.style.backgroundColor = darkBg;
+      if (logoLight) logoLight.style.display = 'none';
+      if (logoDark) logoDark.style.display = 'block';
       if (bannerLight) bannerLight.style.display = 'none';
       if (bannerDark) bannerDark.style.display = 'block';
     } else {
       root.classList.remove('dark');
-      iconTheme.classList.replace('fa-sun', 'fa-moon');
-      headerEl.style.backgroundColor = '#FFFFFF';
-      mobileMen.style.backgroundColor = '#FFFFFF';
-      logoLight.style.display = 'block';
-      logoDark.style.display = 'none';
+      if (iconTheme) iconTheme.classList.replace('fa-sun', 'fa-moon');
+      if (headerEl) headerEl.style.backgroundColor = '#FFFFFF';
+      if (mobileMen) mobileMen.style.backgroundColor = '#FFFFFF';
+      if (logoLight) logoLight.style.display = 'block';
+      if (logoDark) logoDark.style.display = 'none';
       if (bannerLight) bannerLight.style.display = 'block';
       if (bannerDark) bannerDark.style.display = 'none';
     }
   }
 
-  // inicializar tema
+  // 🔹 inicializar tema
   const stored = localStorage.getItem('theme');
   const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   applyTheme(stored || (preferDark ? 'dark' : 'light'));
 
-  // toggle tema
-  btnTheme.addEventListener('click', () => {
-    const next = root.classList.contains('dark') ? 'light' : 'dark';
-    applyTheme(next);
-    localStorage.setItem('theme', next);
-  });
+  // 🔹 toggle tema
+  if (btnTheme) {
+    btnTheme.addEventListener('click', () => {
+      const next = root.classList.contains('dark') ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('theme', next);
+    });
+  }
 
-  // mobile menu open/close
-  let menuOpen = false;
-  function openMenu() {
-    mobileMen.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none');
-    mobileMen.classList.add('max-h-screen', 'opacity-100', 'pointer-events-auto');
-    btnMenu.innerHTML = closeSVG;
-    menuOpen = true;
-  }
-  function closeMenu() {
-    mobileMen.classList.remove('max-h-screen', 'opacity-100', 'pointer-events-auto');
-    mobileMen.classList.add('max-h-0', 'opacity-0', 'pointer-events-none');
-    btnMenu.innerHTML = hamburgerSVG;
-    menuOpen = false;
-  }
-  btnMenu.addEventListener('click', (e) => {
-    e.stopPropagation();
-    menuOpen ? closeMenu() : openMenu();
-  });
-  // cerrar al click fuera
-  document.addEventListener('click', (e) => {
-    if (menuOpen && !mobileMen.contains(e.target) && !btnMenu.contains(e.target)) {
-      closeMenu();
+  // 🔹 mobile menu open/close
+  if (btnMenu && mobileMen) {
+    let menuOpen = false;
+    function openMenu() {
+      mobileMen.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none');
+      mobileMen.classList.add('max-h-screen', 'opacity-100', 'pointer-events-auto');
+      btnMenu.innerHTML = closeSVG;
+      menuOpen = true;
     }
-  });
-  // cerrar al pulsar nav-link
-  // document.querySelectorAll('.nav-link').forEach((link) => {
-  //   link.addEventListener('click', () => {
-  //     // if (menuOpen) closeMenu();
-  //   });
-  // });
+    function closeMenu() {
+      mobileMen.classList.remove('max-h-screen', 'opacity-100', 'pointer-events-auto');
+      mobileMen.classList.add('max-h-0', 'opacity-0', 'pointer-events-none');
+      btnMenu.innerHTML = hamburgerSVG;
+      menuOpen = false;
+    }
+    btnMenu.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menuOpen ? closeMenu() : openMenu();
+    });
+    // cerrar al click fuera
+    document.addEventListener('click', (e) => {
+      if (menuOpen && !mobileMen.contains(e.target) && !btnMenu.contains(e.target)) {
+        closeMenu();
+      }
+    });
+  }
+
+  // 🔹 cerrar al pulsar nav-link
   document.querySelectorAll('.nav-link').forEach((link) => {
     link.addEventListener('click', (e) => {
       // 1) quitar ACTIVE donde esté
@@ -101,43 +104,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // scroll-spy para active link
-  // const sections = document.querySelectorAll('section[id]');
-  // const navLinks = document.querySelectorAll('.nav-link');
-  // const observer = new IntersectionObserver(
-  //   (entries) => {
-  //     entries.forEach((entry) => {
-  //       const id = entry.target.id;
-  //       const link = document.querySelector(`.nav-link[href="#${id}"]`);
-  //       if (entry.isIntersecting) {
-  //         navLinks.forEach((a) => a.classList.remove('active'));
-  //         if (link) link.classList.add('active');
-  //       }
-  //     });
-  //   },
-  //   { threshold: 0.6 }
-  // );
-  // sections.forEach((sec) => observer.observe(sec));
-  // scroll-spy para active link desactivado:
-  //AAAAAAASAAAAAAA
-  // const sections = document.querySelectorAll('section[id]');
-  // const navLinks = document.querySelectorAll('.nav-link');
-  // const observer = new IntersectionObserver(
-  //   (entries) => {
-  //     entries.forEach((entry) => {
-  //       const id = entry.target.id;
-  //       const link = document.querySelector(`.nav-link[href="#${id}"]`);
-  //       if (entry.isIntersecting) {
-  //         navLinks.forEach((a) => a.classList.remove('active'));
-  //         if (link) link.classList.add('active');
-  //       }
-  //     });
-  //   },
-  //   { threshold: 0.6 }
-  // );
-  // sections.forEach((sec) => observer.observe(sec));
+  // 🔹 scroll-spy para active link (desactivado)
+  /*
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const id = entry.target.id;
+        const link = document.querySelector(`.nav-link[href="#${id}"]`);
+        if (entry.isIntersecting) {
+          navLinks.forEach((a) => a.classList.remove('active'));
+          if (link) link.classList.add('active');
+        }
+      });
+    },
+    { threshold: 0.6 }
+  );
+  sections.forEach((sec) => observer.observe(sec));
+*/
 
-  // carrusel (si existe)
+  // 🔹 carrusel (si existe)
   const carousel = document.getElementById('carousel');
   if (carousel) {
     const prevBtn = document.getElementById('prev-slide');

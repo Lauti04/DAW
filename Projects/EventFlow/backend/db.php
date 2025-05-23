@@ -13,7 +13,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Mensaje de confirmación para la conexión (para pruebas)
-    echo "Conexión exitosa a la base de datos.";
+    // echo "Conexión exitosa a la base de datos.";
 } catch (PDOException $e) {
     // En caso de error, se muestra el mensaje y se detiene la ejecución
     die("Error de conexión: " . $e->getMessage());

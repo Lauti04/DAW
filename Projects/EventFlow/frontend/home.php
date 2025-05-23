@@ -1,12 +1,5 @@
-<?php
-  session_start();
-  if (isset($_SESSION['user'])) {
-    header('Location: dashboard.php');
-    exit;
-  }
-?>
 <!DOCTYPE html>
-<html lang="es" class="<?= isset($_SESSION['user']) ? 'dark' : '' ?> scroll-smooth scroll-pt-24">
+<html lang="es" class="scroll-smooth scroll-pt-24">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,11 +38,11 @@
           Descubre cómo EventFlow unifica tu calendario, gestor de tareas y recordatorios en un dashboard intuitivo. Ahorra tiempo y mejora tu productividad.
         </p>
         <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-          <a href="/registro"
+          <a href="register_view.php"
             class="btn-primary w-full sm:w-auto transform hover:scale-105 transition duration-300">
             Regístrate gratis
           </a>
-          <a href="/demo"
+          <a href="demo.php"
             class="btn-tertiary w-full sm:w-auto transform hover:scale-105 transition duration-300">
             Prueba el demo
           </a>
@@ -236,7 +229,7 @@
               </p>
             </li>
           </ul>
-          <a href="/registro" 
+          <a href="register_view.php" 
             class="btn-primary mt-4 inline-block transform transition 
                     duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
             Pruébalo gratis
@@ -389,7 +382,7 @@
               <span>Tablero de equipo simple</span>
             </li>
           </ul>
-          <a href="/registro"
+          <a href="register_view.php"
             class="btn-primary w-full mt-6 text-center
                     transform transition-transform duration-300 ease-in-out
                     hover:scale-105">
@@ -443,7 +436,7 @@
               <span>Integraciones API</span>
             </li>
           </ul>
-          <a href="/registro?plan=pro"
+          <a href="register_view.php"
             class="btn-primary w-full mt-6 text-center
                     transform transition-transform duration-300 ease-in-out
                     hover:scale-105">
@@ -497,11 +490,11 @@
               <span>Onboarding personalizado</span>
             </li>
           </ul>
-          <a href="/contacto"
+          <a href="register_view.php"
             class="btn-primary w-full mt-6 text-center
                     transform transition-transform duration-300 ease-in-out
                     hover:scale-105">
-            Contáctanos
+            Actualizar a Empresa
           </a>
         </div>
       </div>
@@ -680,7 +673,7 @@
       </p>
 
       <!-- Botón con halo y bounce -->
-      <a href="registro.php"
+      <a href="register_view.php"
         class="relative inline-flex items-center justify-center
                 btn-primary px-8 py-4 mt-4
                 transform transition-transform duration-300 ease-in-out
@@ -762,7 +755,7 @@
       });
     })();
 
-      // Back to Top button
+    // Back to Top button
     const backToTop = document.getElementById('back-to-top');
     const hero       = document.getElementById('hero');
     // Altura tras la cual aparece el botón
