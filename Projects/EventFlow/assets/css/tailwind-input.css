@@ -22,6 +22,7 @@
   --text-dark: #cccccc;
   --text-light: #ffffff;
   --card-bg: #2e2e2e;
+  --fc-border-color: #333537;
 }
 
 /* Base styles */
@@ -157,7 +158,6 @@
     --tw-gradient-to: var(--accent);
   }
 
-  /* Botones */
   /* Animación para hover */
   @keyframes hover-scale {
     0%,
@@ -169,7 +169,7 @@
     }
   }
 
-  /* Botón primario */
+  /* Botones */
   .btn-primary {
     @apply text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 ease-in-out;
     background-color: var(--primary);
@@ -179,7 +179,6 @@
     animation: hover-scale 0.3s ease-in-out;
   }
 
-  /* Botón secundario (outline) */
   .btn-secondary {
     @apply font-medium py-3 px-6 rounded-lg transition-all duration-300 ease-in-out;
     background-color: transparent;
@@ -192,7 +191,6 @@
     animation: hover-scale 0.3s ease-in-out;
   }
 
-  /* Botón terciario (accent) */
   .btn-tertiary {
     @apply text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 ease-in-out;
     background-color: var(--accent);
@@ -220,7 +218,6 @@
     animation-delay: 150ms;
   }
 
-  /* Animaciones */
   .animate-fade-in {
     animation: fade-in 0.3s ease-out forwards;
   }
@@ -243,6 +240,196 @@
     background-color: var(--primary);
     border-radius: 3px;
   }
+
+  /* Solo para WebKit (Chrome, Safari) */
+  input[type='date']::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+
+  .dark input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(2);
+  }
+
+  /* Campo de fecha: fondo y texto según tema */
+  input[type='date'],
+  input[type='datetime-local'] {
+    background-color: var(--secondary);
+    color: var(--text-dark);
+  }
+
+  .dark input[type='date'],
+  .dark input[type='datetime-local'] {
+    background-color: var(--dark);
+    color: var(--text-light);
+  }
+
+  /* Flatpickr calendar styling */
+  .flatpickr-calendar {
+    background-color: var(--card-bg) !important;
+    color: var(--text-dark) !important;
+    border-radius: 0.5rem !important;
+    overflow: hidden !important;
+  }
+
+  .dark .flatpickr-calendar {
+    background-color: var(--dark) !important;
+    color: var(--text-light) !important;
+  }
+
+  /* Month and weekday headers */
+  .flatpickr-calendar .flatpickr-months,
+  .flatpickr-calendar .flatpickr-weekdays {
+    background-color: var(--card-bg) !important;
+  }
+
+  .dark .flatpickr-calendar .flatpickr-months,
+  .dark .flatpickr-calendar .flatpickr-weekdays {
+    background-color: var(--dark) !important;
+  }
+
+  /* Days and weekdays */
+  .flatpickr-day,
+  .flatpickr-weekday {
+    color: var(--text-dark) !important;
+  }
+
+  .dark .flatpickr-day,
+  .dark .flatpickr-weekday {
+    color: var(--text-light) !important;
+  }
+
+  /* Hover and selected */
+  .flatpickr-day:hover,
+  .flatpickr-day.selected {
+    background-color: var(--primary) !important;
+    color: #fff !important;
+  }
+
+  /* Mes y flechas en cabecera */
+  .flatpickr-calendar .flatpickr-current-month,
+  .flatpickr-calendar .flatpickr-prev-month,
+  .flatpickr-calendar .flatpickr-next-month {
+    color: var(--text-dark) !important;
+  }
+  .dark .flatpickr-calendar .flatpickr-current-month,
+  .dark .flatpickr-calendar .flatpickr-prev-month,
+  .dark .flatpickr-calendar .flatpickr-next-month {
+    color: var(--text-light) !important;
+  }
+
+  /* Selector de horas */
+  .flatpickr-calendar .flatpickr-time input {
+    color: var(--text-dark) !important;
+    background: transparent !important;
+    border: none !important;
+  }
+  .dark .flatpickr-calendar .flatpickr-time input {
+    color: var(--text-light) !important;
+  }
+  .flatpickr-calendar .flatpickr-time .flatpickr-time-separator {
+    color: var(--text-dark) !important;
+  }
+  .dark .flatpickr-calendar .flatpickr-time .flatpickr-time-separator {
+    color: var(--text-light) !important;
+  }
+
+  /* AM/PM */
+  .flatpickr-calendar .flatpickr-am-pm {
+    color: var(--text-dark) !important;
+  }
+  .dark .flatpickr-calendar .flatpickr-am-pm {
+    color: var(--text-light) !important;
+  }
+
+  /* Botón OK de confirmDatePlugin */
+  .flatpickr-calendar .flatpickr-confirm {
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+  .flatpickr-calendar .flatpickr-confirm input {
+    background-color: var(--primary) !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0 !important;
+  }
+
+  /* Asegurar fondo oscuro para paneles */
+  .dark .flatpickr-calendar .flatpickr-time,
+  .dark .flatpickr-calendar .flatpickr-months,
+  .dark .flatpickr-calendar .flatpickr-weekdays {
+    /* background-color: var(--dark) !important; */
+  }
+
+  .flatpickr-confirm {
+    background: var(--primary) !important;
+    color: white;
+    transition: all 0.3s ease-in-out;
+  }
+  .flatpickr-confirm svg {
+    fill: white;
+    margin: auto 0;
+    padding-left: 5px;
+  }
+
+  .flatpickr-confirm:hover {
+    background: color-mix(in srgb, var(--primary) 90%, black 10%) !important;
+    cursor: pointer;
+  }
+
+  .flatpickr-calendar .flatpickr-am-pm:hover {
+    background-color: var(--accent) !important;
+    color: #fff !important;
+  }
+
+  .flatpickr-am-pm:focus {
+    background: none !important;
+  }
+
+  .dark .flatpickr-next-month svg,
+  .dark .flatpickr-prev-month svg {
+    fill: #fff !important;
+  }
+
+  .fc-today-button {
+    display: none !important;
+  }
+
+  /* Botones del datepicker p */
+  .dark .flatpickr-current-month .numInputWrapper span.arrowUp:after {
+    border-bottom-color: #fff !important;
+  }
+
+  .dark .flatpickr-current-month .numInputWrapper span.arrowDown:after {
+    border-top-color: #fff !important;
+  }
+
+  .dark .flatpickr-time .numInputWrapper span.arrowUp:after {
+    border-bottom-color: #ffffff !important;
+  }
+
+  .dark .flatpickr-time .numInputWrapper span.arrowDown:after {
+    border-top-color: #ffffff !important;
+  }
+
+  /* ─────────────────────────────────────────────────────
+   4.1. Modo oscuro para la cabecera de lista (Agenda) 
+   (clase .fc-list-day-cushion) 
+   ───────────────────────────────────────────────────── */
+  .dark .fc-theme-standard .fc-list-day-cushion {
+    background-color: var(--dark) !important; /* fondo oscuro total */
+    color: var(--text-light) !important; /* texto claro */
+  }
+
+  .fc .fc-list-event:hover td {
+    background-color: #b9b9b9 !important; /* fondo azul al pasar el ratón */
+    transition: all 0.3s ease-in-out; /* transición suave */
+    cursor: pointer;
+  }
+
+  .dark .fc .fc-list-event:hover td {
+    background-color: #000000 !important; /* fondo azul al pasar el ratón */
+  }
 }
 
 @layer components {
@@ -255,37 +442,20 @@
     @apply scale-105;
   }
 
-  /* --- Estado ACTIVE, sin span, negrita y subrayado --- 
-  /* .nav-link.active {
-    @apply font-semibold transition-all duration-300 ease-in-out;
-    color: var(--primary);
-    border-bottom: 2px solid var(--primary);
-  }
-  /* Si cambias variables en dark, ya usa --primary o ajusta aquí si lo quieres 
-  .nav-link.active span {
-    display: none;
-  } */
-
-  /* --- Estado ACTIVE: negrita y color (la raya la gestiona utilities) --- */
+  /* Estado ACTIVE */
   .nav-link.active {
     @apply font-semibold;
-    color: var(
-      --primary
-    ); /* mismo color, sin usar @apply */ /* sin border-bottom: todo el subrayado lo hace el <span> */
+    color: var(--primary);
   }
-  /* .nav-link.active span {
-    /* ancho completo para que ya se vea subrayado; al perder .active se anima a 0 
-    @apply w-full;
-  } */
 }
 
 @layer utilities {
-  /* --- Subrayado fijo para el enlace ACTIVO y sin animar al hacer hover --- */
+  /* --- Subrayado fijo para el enlace ACTIVO --- */
   .nav-link.active span {
-    width: 100%; /* anula w-0 */
+    width: 100%;
   }
   .nav-link.active:hover span {
-    width: 100%; /* sigue fijo */
-    transition: none; /* evita que “latee” */
+    width: 100%;
+    transition: none;
   }
 }

@@ -49,10 +49,12 @@ try {
     if ($user && password_verify($password, $user['password'])) {
         // 8) Éxito → guardar sesión y devolver redirect
         $_SESSION['id_usuario'] = $user['id_usuario'];
+        $_SESSION['user_name']  = $user['nombre'];
+
         echo json_encode([
           'success'  => true,
           // la vista está en frontend/, así que dashboard.php debe vivir ahí:
-          'redirect' => 'home.php'
+          'redirect' => 'dashboard.php'
         ]);
         exit;
     }

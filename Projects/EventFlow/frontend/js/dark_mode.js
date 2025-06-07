@@ -1,4 +1,5 @@
-// dark_mode.js
+// frontend/js/dark_mode.js
+
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.documentElement;
   const headerEl = document.querySelector('header.sticky');
@@ -11,13 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const bannerLight = document.getElementById('banner-light');
   const bannerDark = document.getElementById('banner-dark');
 
-  // Guardamos el SVG de hamburguesa solo si existe el botón
+  // Guardamos el SVG de hamburguesa solo si existe el botón móvil
   const hamburgerSVG = btnMenu ? btnMenu.innerHTML.trim() : '';
   const closeSVG = `
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M6 18L18 6M6 6l12 12"/>
-    </svg>`.trim();
+    </svg>`;
 
   // Función que aplica el tema y ajusta todos los elementos
   function applyTheme(theme) {
@@ -44,12 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 🔹 inicializar tema
+  // 🔹 Inicializar tema según storage o preferencia
   const stored = localStorage.getItem('theme');
   const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   applyTheme(stored || (preferDark ? 'dark' : 'light'));
 
-  // 🔹 toggle tema
+  // 🔹 Toggle tema
   if (btnTheme) {
     btnTheme.addEventListener('click', () => {
       const next = root.classList.contains('dark') ? 'light' : 'dark';
@@ -58,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 🔹 mobile menu open/close
+  // 🔹 Mobile menu open/close (si existe)
   if (btnMenu && mobileMen) {
     let menuOpen = false;
     function openMenu() {
@@ -77,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       menuOpen ? closeMenu() : openMenu();
     });
-    // cerrar al click fuera
     document.addEventListener('click', (e) => {
       if (menuOpen && !mobileMen.contains(e.target) && !btnMenu.contains(e.target)) {
         closeMenu();
@@ -85,46 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 🔹 cerrar al pulsar nav-link
+  // 🔹 Nav-link: sólo uno activo y scroll suave
   document.querySelectorAll('.nav-link').forEach((link) => {
     link.addEventListener('click', (e) => {
-      // 1) quitar ACTIVE donde esté
       document.querySelectorAll('.nav-link.active').forEach((a) => a.classList.remove('active'));
-
-      // 2) poner ACTIVE en *todos* los enlaces con el mismo href (desktop + mobile)
-      const href = link.getAttribute('href');
-      document
-        .querySelectorAll(`.nav-link[href="${href}"]`)
-        .forEach((a) => a.classList.add('active'));
-
-      // 3) hacer scroll suave a la sección
+      link.classList.add('active');
       e.preventDefault();
       const target = link.getAttribute('href').slice(1);
       document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' });
     });
   });
 
-  // 🔹 scroll-spy para active link (desactivado)
-  /*
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link');
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        const id = entry.target.id;
-        const link = document.querySelector(`.nav-link[href="#${id}"]`);
-        if (entry.isIntersecting) {
-          navLinks.forEach((a) => a.classList.remove('active'));
-          if (link) link.classList.add('active');
-        }
-      });
-    },
-    { threshold: 0.6 }
-  );
-  sections.forEach((sec) => observer.observe(sec));
-*/
-
-  // 🔹 carrusel (si existe)
+  // 🔹 Carrusel (si existe)
   const carousel = document.getElementById('carousel');
   if (carousel) {
     const prevBtn = document.getElementById('prev-slide');

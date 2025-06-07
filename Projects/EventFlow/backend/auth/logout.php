@@ -1,10 +1,7 @@
 <?php
-header('Content-Type: application/json');
 session_start();
+session_unset();
 session_destroy();
-
-echo json_encode([
-  'success' => true,
-  'redirect' => 'login.html'
-]);
+setcookie(session_name(), '', time() - 3600);
+header('Location: ../../frontend/login_view.php');
 exit;

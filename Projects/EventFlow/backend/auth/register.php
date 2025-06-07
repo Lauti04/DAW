@@ -55,6 +55,9 @@ try {
       "INSERT INTO usuarios (nombre,email,password) VALUES (?,?,?)"
     );
     if ($stmt->execute([$nombre,$email,$hashed])) {
+        $_SESSION['id_usuario'] = $pdo->lastInsertId();
+        $_SESSION['user_name']  = $nombre;
+
         echo json_encode([
           'success'  => true,
           'redirect' => 'login_view.php'
