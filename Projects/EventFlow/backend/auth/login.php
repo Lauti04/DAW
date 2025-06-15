@@ -17,8 +17,8 @@ require __DIR__ . '/../db.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode([
-      'success' => false,
-      'message' => 'Método no permitido'
+        'success' => false,
+        'message' => 'Método no permitido'
     ]);
     exit;
 }
@@ -30,47 +30,50 @@ $password =           $_POST['password'] ?? '';
 // 6) Validaciones
 if (!$email || !$password) {
     echo json_encode([
-      'success' => false,
-      'message' => 'Completa todos los campos'
+        'success' => false,
+        'message' => 'Completa todos los campos'
     ]);
     exit;
 }
 
 try {
-    // 7) Buscar usuario por email
-    $stmt = $pdo->prepare(
-      "SELECT id_usuario, password 
-         FROM usuarios 
-        WHERE email = ?"
-    );
-    $stmt->execute([$email]);
+    // 7) Buscar usuario por email (traemos id, nombre y hash de password)
+    $stmt = $pdo->prepare("
+        SELECT id_usuario, nombre, password
+        FROM usuarios
+        WHERE email = :email
+    ");
+    $stmt->execute([
+        'email' => $email
+    ]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Verificar que exista y que la contraseña coincida
     if ($user && password_verify($password, $user['password'])) {
         // 8) Éxito → guardar sesión y devolver redirect
-        $_SESSION['id_usuario'] = $user['id_usuario'];
-        $_SESSION['user_name']  = $user['nombre'];
+        $_SESSION['id_usuario']     = $user['id_usuario'];
+        $_SESSION['nombre_usuario'] = $user['nombre'];
 
         echo json_encode([
-          'success'  => true,
-          // la vista está en frontend/, así que dashboard.php debe vivir ahí:
-          'redirect' => 'dashboard.php'
+            'success'  => true,
+            // la vista está en frontend/, así que dashboard.php debe vivir ahí:
+            'redirect' => 'dashboard.php'
         ]);
         exit;
     }
 
     // Si llegamos aquí, credenciales inválidas
     echo json_encode([
-      'success' => false,
-      'message' => 'Credenciales inválidas'
+        'success' => false,
+        'message' => 'Credenciales inválidas'
     ]);
     exit;
 
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode([
-      'success' => false,
-      'message' => 'Error de base de datos: ' . $e->getMessage()
+        'success' => false,
+        'message' => 'Error de base de datos: ' . $e->getMessage()
     ]);
     exit;
 }

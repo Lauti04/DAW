@@ -9,6 +9,7 @@ require BASE_PATH . '/backend/auth/session.php';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>EventFlow – Dashboard</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="../assets/img/logos/CalendarWeb.png">
 
   <!-- Tailwind CSS -->
   <link href="../assets/css/tailwind.css" rel="stylesheet" />
@@ -52,6 +53,14 @@ require BASE_PATH . '/backend/auth/session.php';
         gap: 0.5rem !important;
       }
     }
+
+    /* tailwind-input.css o tu CSS base */
+    .js-loading body {
+      visibility: hidden;
+    }
+    .js-loading .loader {
+      display: flex; /* o block, según tu loader */
+    }
   </style>
 </head>
 <body class="bg-secondary dark:bg-dark">
@@ -81,6 +90,13 @@ require BASE_PATH . '/backend/auth/session.php';
           <i class="fas fa-chevron-left text-xl"></i>
         </button>
       </div>
+      <?php
+        // session.php ya arrancó la sesión y validó usuario
+        $nombre = isset($_SESSION['nombre_usuario']) ? $_SESSION['nombre_usuario'] : 'Usuario';
+      ?>
+      <h2 class="text-xl font-heading mb-4 px-3">
+        Bienvenido, <?= htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8') ?>!
+      </h2>
       <!-- ▼ CREAR ÍTEM ▼ -->
       <div class="mb-4 px-3">
         <select
@@ -93,15 +109,60 @@ require BASE_PATH . '/backend/auth/session.php';
           <option value="recordatorio">Recordatorio</option>
         </select>
       </div>
+      <span
+        id="help-create"
+        class="block mt-1 mb-4 px-3 text-sm text-accent dark:text-text-light cursor-pointer hover:underline"
+      >
+        ¿No sabes cuál elegir?
+      </span>
       <!-- ▲ FIN CREAR ÍTEM ▲ -->
-      <nav class="space-y-3">
+      <nav class="space-y-3 mb-6">
         <?php
-          $items = ['Mes','Semana','Día','Agenda','Tareas','Recordatorios'];
+          $items = ['Mes','Semana','Día','Agenda'];
           foreach($items as $item) {
-            echo "<a href='#' class='nav-link block px-3 py-2 rounded hover:bg-accent dark:hover:bg-accent transition text-white'>$item</a>";
-          }
+            echo "<a href='#' class='nav-link block px-3 py-2 rounded text-white font-normal transition-colors duration-200 ease-in-out'>$item</a>";          }
         ?>
       </nav>
+
+      <!-- ──────────────── FILTROS ──────────────── -->
+      <div class="px-3 space-y-2">
+        <label class="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="filter-all"
+            checked
+            class="form-checkbox checked:bg-accent checked:border-accent focus:ring-accent transition-colors duration-200 ease-in-out"
+          />
+          <span class="text-white dark:text-text-light">Mostrar todos</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="filter-evento"
+            checked
+            class="form-checkbox checked:bg-accent checked:border-accent focus:ring-accent transition-colors duration-200 ease-in-out"
+          />
+          <span class="text-white dark:text-text-light">Eventos</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="filter-tarea"
+            checked
+            class="form-checkbox checked:bg-accent checked:border-accent focus:ring-accent transition-colors duration-200 ease-in-out"
+          />
+          <span class="text-white dark:text-text-light">Tareas</span>
+        </label>
+        <label class="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="filter-recordatorio"
+            checked
+            class="form-checkbox checked:bg-accent checked:border-accent focus:ring-accent transition-colors duration-200 ease-in-out"
+          />
+          <span class="text-white dark:text-text-light">Recordatorios</span>
+        </label>
+      </div>
     </aside>
 
     <!-- Main -->

@@ -430,6 +430,183 @@
   .dark .fc .fc-list-event:hover td {
     background-color: #000000 !important; /* fondo azul al pasar el ratón */
   }
+
+  /* FullCalendar: botón de vista activo */
+  .fc .fc-button-active {
+    background-color: var(--accent) !important;
+    color: #ffffff !important;
+  }
+
+  .form-checkbox:checked {
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+  }
+
+  /*----------------------------------
+    Checkboxes
+  ----------------------------------*/
+  input[type='checkbox'] {
+    /* Por defecto (light): palomita blanca, cuadro transparente */
+    accent-color: #ffffff !important;
+    background-color: transparent !important;
+    border-color: var(--accent) !important;
+    transition: background-color 0.2s ease-in-out;
+  }
+  input[type='checkbox']:checked {
+    /* Cuando se marque, fondo/acento */
+    accent-color: var(--accent) !important;
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+  }
+  /* Dark mode: sin marcar fondo oscuro y palomita negra */
+  .dark input[type='checkbox'] {
+    background-color: var(--dark) !important;
+    accent-color: #000000 !important;
+    border-color: #000000 !important;
+  }
+  .dark input[type='checkbox']:checked {
+    /* Marcado sigue usando accent */
+    accent-color: var(--accent) !important;
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+  }
+
+  /* ─── Oculta overflow interno en las celdas ─── */
+  .fc .fc-daygrid-day-events {
+    /* overflow: hidden; */
+  }
+
+  /* ─── Mejor contraste en “+X más” ─── */
+  .fc .fc-daygrid-day-bottom {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  /* ─── Altura mínima de celda si quieres más control ─── */
+  .fc .fc-daygrid-day-frame {
+    min-height: 100px; /* o el valor que encaje con tu diseño */
+  }
+
+  /* ─── Popover FullCalendar ─── */
+  /* Base light */
+  .fc-theme-standard .fc-popover {
+    background-color: var(--card-bg) !important;
+    color: var(--text-dark) !important;
+    border: 1px solid var(--fc-border-color, #ddd) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+  .fc-theme-standard .fc-popover-header {
+    padding: 0.5rem 1rem !important;
+    border-bottom: 1px solid var(--fc-border-color, #ddd) !important;
+  }
+  .fc-theme-standard .fc-popover-body {
+    padding: 0.5rem 1rem !important;
+  }
+
+  /* Dark mode */
+  .dark .fc-theme-standard .fc-popover {
+    background-color: var(--dark) !important;
+    color: var(--text-light) !important;
+    border: 1px solid var(--fc-border-color) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+  }
+  .dark .fc-theme-standard .fc-popover-header {
+    border-bottom: 1px solid var(--fc-border-color) !important;
+  }
+  .dark .fc-theme-standard .fc-popover-body li {
+    border-bottom: 1px solid var(--fc-border-color) !important;
+  }
+
+  .dark .fc-daygrid-more-link:hover {
+    background-color: var(--text-dark) !important;
+    color: var(--dark) !important;
+    transition: all 0.3s ease-in-out;
+  }
+
+  /* Cabeceras de día en vista mensual */
+  .dark .fc .fc-col-header-cell {
+    background-color: var(--dark) !important;
+  }
+  .dark .fc .fc-col-header-cell-cushion {
+    color: var(--text-light) !important;
+  }
+
+  /* Scrollbar base (Chrome, Edge, Safari) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 6px;
+    border: 2px solid var(--secondary);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--secondary);
+    border-radius: 6px;
+  }
+
+  /* Scrollbar hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  /* Scrollbar para modo oscuro */
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border: 2px solid var(--dark);
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: var(--dark);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--secondary);
+  }
+  .dark * {
+    scrollbar-color: var(--primary) var(--dark);
+  }
+
+  /* ─── Estilos de inputs personalizados para validar formularios de login y registro─── */
+  .input-ok {
+    border: 2px solid #22c55e !important; /* Verde Tailwind */
+    transition: border 0.2s;
+  }
+  .input-error {
+    border: 2px solid #ef4444 !important; /* Rojo Tailwind */
+    transition: border 0.2s;
+  }
+  .status-icon {
+    width: 1.5em;
+    height: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .help-msg {
+    font-size: 0.85em;
+    color: #ef4444;
+    min-height: 1.1em;
+  }
+
+  .input-ok:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #22c55e55; /* Sombra suave verde */
+    border-color: #22c55e !important;
+  }
+  .input-error:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #ef444455; /* Sombra suave roja */
+    border-color: #ef4444 !important;
+  }
 }
 
 @layer components {
@@ -445,7 +622,6 @@
   /* Estado ACTIVE */
   .nav-link.active {
     @apply font-semibold;
-    color: var(--primary);
   }
 }
 
@@ -457,5 +633,27 @@
   .nav-link.active:hover span {
     width: 100%;
     transition: none;
+  }
+}
+
+/* ─── Restaurar color de cabeceras en mes view ─── */
+.fc .fc-col-header-cell {
+  background-color: inherit; /* toma el fondo de tu tema */
+}
+.fc .fc-col-header-cell-cushion {
+  color: inherit; /* texto de día usa tu color base */
+}
+
+/* ─── Altura mínima en escritorio (≥640px) ─── */
+@media (min-width: 640px) {
+  /* Habilita scroll vertical en el contenedor del calendario */
+  #calendar {
+    overflow-y: auto !important;
+    min-height: 600px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Asegura que FullCalendar no oculte filas adicionales */
+  .fc .fc-daygrid .fc-scroller {
+    overflow: visible !important;
   }
 }

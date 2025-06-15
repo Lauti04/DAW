@@ -5,16 +5,74 @@
 
 // Modal para editar un evento existente.
 function EditEventModal({ existing, onClose, categorias }) {
+  const [fechaInicio, setFechaInicio] = React.useState(existing.fecha_inicio || '');
+  const [fechaFin, setFechaFin] = React.useState(existing.fecha_fin || '');
+  const [dateError, setDateError] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState('');
+  const refInicio = React.useRef(null);
+  const refFin = React.useRef(null);
+
+  // Valida fechas siempre que cambian
+  React.useEffect(() => {
+    if (fechaInicio && fechaFin) {
+      const startDate = new Date(fechaInicio.replace(' ', 'T'));
+      const endDate = new Date(fechaFin.replace(' ', 'T'));
+      setDateError(startDate > endDate);
+    } else {
+      setDateError(false);
+    }
+  }, [fechaInicio, fechaFin]);
+
+  // Flatpickr SOLO aquí, una vez
+  React.useEffect(() => {
+    if (refInicio.current) {
+      flatpickr(refInicio.current, {
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        defaultDate: fechaInicio || null,
+        allowInput: false,
+        plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
+        onChange: ([selected]) => {
+          const v = selected ? selected.toISOString().slice(0, 16).replace('T', ' ') : '';
+          setFechaInicio(v);
+        },
+      });
+    }
+    if (refFin.current) {
+      flatpickr(refFin.current, {
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        defaultDate: fechaFin || null,
+        allowInput: false,
+        plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
+        onChange: ([selected]) => {
+          const v = selected ? selected.toISOString().slice(0, 16).replace('T', ' ') : '';
+          setFechaFin(v);
+        },
+      });
+    }
+  }, []); // SOLO al montar
+
+  // Editar evento con validación real
   async function handleSubmit(e) {
     e.preventDefault();
+    setSubmitError('');
+    if (!fechaInicio) {
+      setSubmitError('Selecciona la fecha de inicio.');
+      return;
+    }
+    if (fechaFin && dateError) {
+      setSubmitError('La fecha de inicio no puede ser mayor que la de fin.');
+      return;
+    }
     const form = e.target;
     const data = {
       action: 'editar',
       id_evento: existing.id,
       titulo: form.elements['titulo'].value,
       descripcion: form.elements['descripcion'].value,
-      fecha_inicio: form.elements['fecha_inicio'].value,
-      fecha_fin: form.elements['fecha_fin'].value,
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
       ubicacion: form.elements['ubicacion'].value,
       id_categoria: form.elements['id_categoria'].value,
     };
@@ -29,9 +87,11 @@ function EditEventModal({ existing, onClose, categorias }) {
         window.dispatchEvent(new CustomEvent('eventosActualizados'));
         onClose();
       } else {
+        setSubmitError(json.error || 'Error al editar evento');
         console.error('Error al editar evento:', json.error);
       }
     } catch (err) {
+      setSubmitError('Error en fetch editar evento');
       console.error('Error en fetch editar evento:', err);
     }
   }
@@ -49,9 +109,11 @@ function EditEventModal({ existing, onClose, categorias }) {
         window.dispatchEvent(new CustomEvent('eventosActualizados'));
         onClose();
       } else {
+        setSubmitError(json.error || 'Error al borrar evento');
         console.error('Error al borrar evento:', json.error);
       }
     } catch (err) {
+      setSubmitError('Error en fetch borrar evento');
       console.error('Error en fetch borrar evento:', err);
     }
   };
@@ -62,14 +124,14 @@ function EditEventModal({ existing, onClose, categorias }) {
       onClick={onClose}
     >
       <div
-        className="bg-card dark:bg-dark p-6 rounded-lg w-96 animate-fade-in"
+        className="bg-card dark:bg-dark p-6 rounded-lg w-full max-w-md mx-4 sm:mx-auto max-h-[calc(100vh-4rem)] overflow-y-auto animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-heading text-text-dark dark:text-text-light mb-4 flex items-center space-x-2">
           <i className="fas fa-calendar-alt" />
           <span>Editar Evento</span>
         </h2>
-        <form id="edit-event-form" onSubmit={handleSubmit}>
+        <form id="edit-event-form" onSubmit={handleSubmit} autoComplete="off">
           {/* Título */}
           <div className="mb-4">
             <label htmlFor="titulo" className="block text-text-dark dark:text-text-light mb-1">
@@ -108,13 +170,14 @@ function EditEventModal({ existing, onClose, categorias }) {
             <div className="relative">
               <input
                 type="text"
+                readOnly
                 name="fecha_inicio"
                 id="fecha_inicio"
-                data-flatpickr
-                data-enable-time="true"
-                defaultValue={existing.fecha_inicio}
+                ref={refInicio}
+                value={fechaInicio}
                 className="bg-secondary w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
                 required
+                onChange={() => {}} // evita warning
               />
               <i className="fas fa-calendar absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
             </div>
@@ -127,16 +190,25 @@ function EditEventModal({ existing, onClose, categorias }) {
             <div className="relative">
               <input
                 type="text"
+                readOnly
                 name="fecha_fin"
                 id="fecha_fin"
-                data-flatpickr
-                data-enable-time="true"
-                defaultValue={existing.fecha_fin || ''}
+                ref={refFin}
+                value={fechaFin}
                 className="bg-secondary w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                onChange={() => {}} // evita warning
               />
               <i className="fas fa-calendar absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
             </div>
           </div>
+          {/* Mensaje error fechas */}
+          {dateError && (
+            <div className="text-red-500 text-sm mt-1">
+              La fecha de inicio no puede ser mayor que la de fin.
+            </div>
+          )}
+          {/* Mensaje error de submit */}
+          {submitError && <div className="text-red-500 text-sm mt-1">{submitError}</div>}
           {/* Ubicación */}
           <div className="mb-4">
             <label htmlFor="ubicacion" className="block text-text-dark dark:text-text-light mb-1">
@@ -171,15 +243,27 @@ function EditEventModal({ existing, onClose, categorias }) {
               ))}
             </select>
           </div>
-          {/* Botones: Cancelar, Guardar y Eliminar en la misma línea */}
-          <div className="flex justify-end space-x-2">
-            <button type="button" onClick={onClose} className="btn-secondary">
+          {/* Botones */}
+          <div className="flex flex-wrap gap-2 justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-secondary flex-1 sm:flex-none py-2 px-4 text-sm"
+            >
               Cancelar
             </button>
-            <button type="submit" className="btn-primary">
+            <button
+              type="submit"
+              className="btn-primary flex-1 sm:flex-none py-2 px-4 text-sm"
+              disabled={dateError}
+            >
               Guardar
             </button>
-            <button type="button" onClick={handleDelete} className="btn-tertiary text-white">
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="btn-tertiary text-white flex-1 sm:flex-none py-2 px-4 text-sm"
+            >
               Eliminar
             </button>
           </div>
@@ -247,7 +331,7 @@ function EditTaskModal({ existing, onClose, categorias }) {
       onClick={onClose}
     >
       <div
-        className="bg-card dark:bg-dark p-6 rounded-lg w-96 animate-fade-in"
+        className=" bg-card dark:bg-dark p-6 rounded-lg w-full max-w-md mx-4 sm:mx-auto max-h-[calc(100vh-4rem)] overflow-y-auto animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-heading text-text-dark dark:text-text-light mb-4 flex items-center space-x-2">
@@ -293,6 +377,7 @@ function EditTaskModal({ existing, onClose, categorias }) {
             <div className="relative">
               <input
                 type="text"
+                readOnly // ← evita el picker nativo
                 name="fecha_vencimiento"
                 id="fecha_vencimiento"
                 data-flatpickr
@@ -342,14 +427,22 @@ function EditTaskModal({ existing, onClose, categorias }) {
             </select>
           </div>
           {/* Botones: Cancelar, Guardar y Eliminar en la misma línea */}
-          <div className="flex justify-end space-x-2">
-            <button type="button" onClick={onClose} className="btn-secondary">
+          <div className="flex flex-wrap gap-2 justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-secondary flex-1 sm:flex-none py-2 px-4 text-sm"
+            >
               Cancelar
             </button>
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary flex-1 sm:flex-none py-2 px-4 text-sm">
               Guardar
             </button>
-            <button type="button" onClick={handleDelete} className="btn-tertiary text-white">
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="btn-tertiary text-white flex-1 sm:flex-none py-2 px-4 text-sm"
+            >
               Eliminar
             </button>
           </div>
@@ -414,7 +507,7 @@ function EditReminderModal({ existing, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-card dark:bg-dark p-6 rounded-lg w-96 animate-fade-in"
+        className=" bg-card dark:bg-dark p-6 rounded-lg w-full max-w-md mx-4 sm:mx-auto max-h-[calc(100vh-4rem)] overflow-y-auto animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-heading text-text-dark dark:text-text-light mb-4 flex items-center space-x-2">
@@ -444,6 +537,7 @@ function EditReminderModal({ existing, onClose }) {
             <div className="relative">
               <input
                 type="text"
+                readOnly // ← evita el picker nativo
                 name="fecha_hora"
                 id="fecha_hora"
                 data-flatpickr
@@ -456,14 +550,22 @@ function EditReminderModal({ existing, onClose }) {
             </div>
           </div>
           {/* Botones: Cancelar, Guardar y Eliminar en la misma línea */}
-          <div className="flex justify-end space-x-2">
-            <button type="button" onClick={onClose} className="btn-secondary">
+          <div className="flex flex-wrap gap-2 justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-secondary flex-1 sm:flex-none py-2 px-4 text-sm"
+            >
               Cancelar
             </button>
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary flex-1 sm:flex-none py-2 px-4 text-sm">
               Guardar
             </button>
-            <button type="button" onClick={handleDelete} className="btn-tertiary text-white">
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="btn-tertiary text-white flex-1 sm:flex-none py-2 px-4 text-sm"
+            >
               Eliminar
             </button>
           </div>

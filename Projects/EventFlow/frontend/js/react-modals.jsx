@@ -13,11 +13,14 @@ const ICONS = {
 function ChooserModal({ onSelect, onHelp, onClose }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(0,0,0,0.7)]"
       onClick={onClose}
     >
       <div
-        className="bg-card dark:bg-dark p-6 rounded-lg w-80 animate-fade-in"
+        className="bg-card dark:bg-dark p-6 rounded-lg
+                  w-full max-w-md mx-4 sm:mx-auto
+                  max-h-[calc(100vh-4rem)] overflow-y-auto
+                  animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-heading text-text-dark dark:text-text-light mb-4 text-center">
@@ -85,11 +88,14 @@ function ModalHeader({ title, type, onSwitch }) {
 function HelpModal({ onBack, onClose }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(0,0,0,0.7)]"
       onClick={onClose}
     >
       <div
-        className="bg-card dark:bg-dark p-6 rounded-lg w-96 max-h-[90vh] overflow-auto animate-fade-in"
+        className="bg-card dark:bg-dark p-6 rounded-lg
+                 w-full max-w-md mx-4 sm:mx-auto
+                 max-h-[calc(100vh-4rem)] overflow-y-auto
+                 animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-heading text-text-dark dark:text-text-light mb-4">
@@ -125,17 +131,75 @@ function HelpModal({ onBack, onClose }) {
   );
 }
 
-// Event creation modal
 function EventModal({ initialDate, onClose, onSwitch, categorias }) {
+  const [fechaInicio, setFechaInicio] = React.useState(initialDate || '');
+  const [fechaFin, setFechaFin] = React.useState('');
+  const [dateError, setDateError] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState('');
+  const refInicio = React.useRef(null);
+  const refFin = React.useRef(null);
+
+  // Valida las fechas SIEMPRE que cambian
+  React.useEffect(() => {
+    if (fechaInicio && fechaFin) {
+      const startDate = new Date(fechaInicio.replace(' ', 'T'));
+      const endDate = new Date(fechaFin.replace(' ', 'T'));
+      setDateError(startDate > endDate);
+    } else {
+      setDateError(false);
+    }
+  }, [fechaInicio, fechaFin]);
+
+  // Inicializa Flatpickr SOLO aquí, con botón OK
+  React.useEffect(() => {
+    if (refInicio.current) {
+      flatpickr(refInicio.current, {
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        defaultDate: fechaInicio || null,
+        allowInput: false,
+        plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
+        onChange: ([selected]) => {
+          const v = selected ? selected.toISOString().slice(0, 16).replace('T', ' ') : '';
+          setFechaInicio(v);
+        },
+      });
+    }
+    if (refFin.current) {
+      flatpickr(refFin.current, {
+        dateFormat: 'Y-m-d H:i',
+        enableTime: true,
+        defaultDate: fechaFin || null,
+        allowInput: false,
+        plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
+        onChange: ([selected]) => {
+          const v = selected ? selected.toISOString().slice(0, 16).replace('T', ' ') : '';
+          setFechaFin(v);
+        },
+      });
+    }
+  }, []); // SOLO al montar
+
+  // Maneja el submit, ahora sí robusto
   async function handleSubmit(e) {
     e.preventDefault();
+    setSubmitError('');
+    // Verifica que haya fecha de inicio y no error de fechas
+    if (!fechaInicio) {
+      setSubmitError('Selecciona la fecha de inicio.');
+      return;
+    }
+    if (fechaFin && dateError) {
+      setSubmitError('La fecha de inicio no puede ser mayor que la de fin.');
+      return;
+    }
     const form = e.target;
     const data = {
       action: 'crear',
       titulo: form.elements['titulo'].value,
       descripcion: form.elements['descripcion'].value,
-      fecha_inicio: form.elements['fecha_inicio'].value,
-      fecha_fin: form.elements['fecha_fin'].value,
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
       ubicacion: form.elements['ubicacion'].value,
       id_categoria: form.elements['id_categoria'].value,
     };
@@ -150,24 +214,27 @@ function EventModal({ initialDate, onClose, onSwitch, categorias }) {
         window.dispatchEvent(new CustomEvent('eventosActualizados'));
         onClose();
       } else {
+        setSubmitError(json.error || 'Error al crear evento');
         console.error('Error al crear evento:', json.error);
       }
     } catch (err) {
+      setSubmitError('Error en fetch evento');
       console.error('Error en fetch evento:', err);
     }
   }
 
+  // Render modal y formulario
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)] dark:bg-[rgba(255,255,255,0.2)]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(0,0,0,0.7)] dark:bg-[rgba(255,255,255,0.2)]"
       onClick={onClose}
     >
       <div
-        className="bg-card dark:bg-dark p-6 rounded-lg w-96 animate-fade-in overflow-auto max-h-[90vh]"
+        className="bg-card dark:bg-dark p-6 rounded-lg w-full max-w-md mx-4 sm:mx-auto max-h-[calc(100vh-4rem)] overflow-y-auto animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <ModalHeader title="Crear Evento" type="evento" onSwitch={onSwitch} />
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit} autoComplete="off">
           {/* Título */}
           <div>
             <label className="block text-text-dark dark:text-text-light mb-1">Título</label>
@@ -190,34 +257,50 @@ function EventModal({ initialDate, onClose, onSwitch, categorias }) {
           </div>
           {/* Fechas */}
           <div className="grid grid-cols-1 gap-4">
-            {' '}
-            {[
-              {
-                label: 'Fecha inicio',
-                name: 'fecha_inicio',
-                required: true,
-                defaultValue: initialDate,
-              },
-              { label: 'Fecha fin', name: 'fecha_fin', required: false, defaultValue: '' },
-            ].map(({ label, name, required, defaultValue }) => (
-              <div key={label}>
-                <label className="block text-text-dark dark:text-text-light mb-1">{label}</label>
-                <div className="relative">
-                  <input
-                    name={name}
-                    type="text"
-                    data-flatpickr
-                    data-enable-time={true}
-                    defaultValue={defaultValue}
-                    className="flatpickr-input w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="YYYY-MM-DD HH:mm"
-                    required={required}
-                  />
-                  <i className="fas fa-calendar absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
-                </div>
+            {/* Fecha inicio */}
+            <div>
+              <label className="block text-text-dark dark:text-text-light mb-1">Fecha inicio</label>
+              <div className="relative">
+                <input
+                  ref={refInicio}
+                  name="fecha_inicio"
+                  type="text"
+                  readOnly
+                  value={fechaInicio}
+                  className="flatpickr-input w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="YYYY-MM-DD HH:mm"
+                  required
+                  onChange={() => {}} // Evita warning
+                />
+                <i className="fas fa-calendar absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
               </div>
-            ))}
+            </div>
+            {/* Fecha fin */}
+            <div>
+              <label className="block text-text-dark dark:text-text-light mb-1">Fecha fin</label>
+              <div className="relative">
+                <input
+                  ref={refFin}
+                  name="fecha_fin"
+                  type="text"
+                  readOnly
+                  value={fechaFin}
+                  className="flatpickr-input w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="YYYY-MM-DD HH:mm"
+                  onChange={() => {}} // Evita warning
+                />
+                <i className="fas fa-calendar absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
+              </div>
+            </div>
           </div>
+          {/* Mensaje error fechas */}
+          {dateError && (
+            <div className="text-red-500 text-sm mt-1">
+              La fecha de inicio no puede ser mayor que la de fin.
+            </div>
+          )}
+          {/* Mensaje error de submit */}
+          {submitError && <div className="text-red-500 text-sm mt-1">{submitError}</div>}
           {/* Ubicación */}
           <div>
             <label className="block text-text-dark dark:text-text-light mb-1">Ubicación</label>
@@ -248,7 +331,7 @@ function EventModal({ initialDate, onClose, onSwitch, categorias }) {
             <button type="button" onClick={onClose} className="btn-secondary">
               Cancelar
             </button>
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary" disabled={dateError}>
               Guardar
             </button>
           </div>
@@ -291,11 +374,14 @@ function TaskModal({ initialDate, onClose, onSwitch, categorias }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)] dark:bg-[rgba(255,255,255,0.2)]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(0,0,0,0.7)] dark:bg-[rgba(255,255,255,0.2)]"
       onClick={onClose}
     >
       <div
-        className="bg-card dark:bg-dark p-6 rounded-lg w-96 animate-fade-in overflow-auto max-h-[90vh]"
+        className="bg-card dark:bg-dark p-6 rounded-lg
+                 w-full max-w-md mx-4 sm:mx-auto
+                 max-h-[calc(100vh-4rem)] overflow-y-auto
+                 animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <ModalHeader title="Crear Tarea" type="tarea" onSwitch={onSwitch} />
@@ -322,17 +408,20 @@ function TaskModal({ initialDate, onClose, onSwitch, categorias }) {
           </div>
           {/* Fecha y hora */}
           <div>
-            <label className="block text-text-dark dark:text-text-light mb-1">Fecha y hora</label>
+            <label className="block text-text-dark dark:text-text-light mb-1">
+              Fecha vencimiento
+            </label>
             <div className="relative">
               <input
                 name="fecha_vencimiento"
                 type="text"
+                readOnly
                 data-flatpickr
                 data-enable-time={true}
                 defaultValue={initialDate}
+                required
                 className="flatpickr-input w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="YYYY-MM-DD HH:mm"
-                required
               />
               <i className="fas fa-calendar absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
             </div>
@@ -411,11 +500,14 @@ function ReminderModal({ initialDate, onClose, onSwitch }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)] dark:bg-[rgba(255,255,255,0.2)]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(0,0,0,0.7)] dark:bg-[rgba(255,255,255,0.2)]"
       onClick={onClose}
     >
       <div
-        className="bg-card dark:bg-dark p-6 rounded-lg w-96 animate-fade-in overflow-auto max-h-[90vh]"
+        className="bg-card dark:bg-dark p-6 rounded-lg
+                 w-full max-w-md mx-4 sm:mx-auto
+                 max-h-[calc(100vh-4rem)] overflow-y-auto
+                 animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <ModalHeader title="Crear Recordatorio" type="recordatorio" onSwitch={onSwitch} />
@@ -438,12 +530,13 @@ function ReminderModal({ initialDate, onClose, onSwitch }) {
               <input
                 name="fecha_hora"
                 type="text"
+                readOnly
                 data-flatpickr
                 data-enable-time={true}
                 defaultValue={initialDate}
-                className="flatpickr-input w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus-ring-accent"
-                placeholder="YYYY-MM-DD HH:mm"
                 required
+                className="flatpickr-input w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="YYYY-MM-DD HH:mm"
               />
               <i className="fas fa-calendar absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
             </div>
@@ -495,8 +588,15 @@ function App() {
 
   // Escuchar tanto openModal como los eventos de editar (evento, tarea y recordatorio)
   useEffect(() => {
-    function handlerCrear(e) {
-      setModal({ open: true, type: 'selector', date: e.detail.dateStr, existing: null });
+    function handlerOpen(e) {
+      const { type, dateStr } = e.detail || {};
+      if (type) {
+        // viene del sidebar select: abrir directamente ese modal
+        setModal({ open: true, type, date: dateStr, existing: null });
+      } else {
+        // viene del botón “Crear…” o eventClick sin tipo: abrimos el selector
+        setModal({ open: true, type: 'selector', date: dateStr, existing: null });
+      }
     }
     function handlerEditarEvento(e) {
       setModal({
@@ -544,12 +644,16 @@ function App() {
       });
     }
 
-    window.addEventListener('openModal', handlerCrear);
+    window.addEventListener('openModal', handlerOpen);
+    window.addEventListener('openHelpModal', () => {
+      setModal({ open: true, type: 'help', date: null, existing: null });
+    });
     window.addEventListener('openModalEditarEvento', handlerEditarEvento);
     window.addEventListener('openModalEditarTarea', handlerEditarTarea);
     window.addEventListener('openModalEditarRecordatorio', handlerEditarRecordatorio);
     return () => {
-      window.removeEventListener('openModal', handlerCrear);
+      window.removeEventListener('openModal', handlerOpen);
+      window.removeEventListener('openHelpModal', () => {});
       window.removeEventListener('openModalEditarEvento', handlerEditarEvento);
       window.removeEventListener('openModalEditarTarea', handlerEditarTarea);
       window.removeEventListener('openModalEditarRecordatorio', handlerEditarRecordatorio);
@@ -565,7 +669,7 @@ function App() {
           flatpickr(input, {
             dateFormat: input.dataset.enableTime === 'true' ? 'Y-m-d H:i' : 'Y-m-d',
             enableTime: input.dataset.enableTime === 'true',
-            allowInput: true,
+            allowInput: false, // ← impide caída al selector nativo
             theme: document.documentElement.classList.contains('dark') ? 'material_dark' : 'light',
             plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
           });

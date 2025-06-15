@@ -29,18 +29,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   const calendarEl = document.getElementById('calendar');
   // tras calendar.render():
-  document.querySelectorAll('.fc-daygrid-day-frame').forEach(function (cell) {
-    cell.addEventListener('touchstart', function (e) {
-      // evita que el tap cierre inmediatamente el modal,
-      // pero no interfiere en el toolbar
-      e.preventDefault();
-      e.stopPropagation();
-    });
-  });
+  // document.querySelectorAll('.fc-daygrid-day-frame').forEach(function (cell) {
+  //   cell.addEventListener('touchstart', function (e) {
+  //     // evita que el tap cierre inmediatamente el modal,
+  //     // pero no interfiere en el toolbar
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //   });
+  // });
 
   // ───────────────────────────────────────────────────────────────────────────
   //    3) Inicialización de FullCalendar
   // ───────────────────────────────────────────────────────────────────────────
+  // Detectar móvil vs escritorio
+  const isMobile = window.innerWidth < 640;
   var calendar = new FullCalendar.Calendar(calendarEl, {
     locale: 'es',
     buttonText: {
@@ -51,6 +53,36 @@ document.addEventListener('DOMContentLoaded', async function () {
       listWeek: 'Agenda',
     },
     initialView: 'dayGridMonth',
+    // ─── Ajuste de tamaño y comportamiento de eventos ───
+    // Borra todo lo que tuvieras de `height: …`, `contentHeight: …`, `aspectRatio`…
+    height: isMobile ? 'auto' : window.innerHeight - 96,
+    dayMaxEventRows: 2, // 2 filas de eventos
+    dayMaxEvents: true, // “+X más”
+    moreLinkClick: 'popover',
+    moreLinkContent: function (arg) {
+      return '+' + arg.num + ' más';
+    },
+    // ───────── Vista-específicas ─────────
+    views: {
+      dayGridMonth: {
+        fixedWeekCount: true, // 6 filas iguales
+        contentHeight: () => {
+          // altura calculada sólo para mensual
+          const rows = 6;
+          const headerH = 40;
+          const cellH = Math.floor((window.innerHeight - headerH) / rows);
+          return headerH + cellH * rows;
+        },
+      },
+      timeGridWeek: {
+        contentHeight: 'auto', // que auto-ajuste su altura
+      },
+      timeGridDay: {
+        contentHeight: 'auto',
+      },
+    },
+    eventDisplay: 'block',
+    // ────────────────────────────────────────────────────────────────────────
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
@@ -97,7 +129,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             .then((json) => {
               if (json.success) {
                 const mapped = json.data.map((ev) => {
-                  // Forzar --primary en “Trabajo” (ID=1); si no, usar color de BD o fallback
+                  // Calculamos un end “inclusivo”
+                  let endDate = ev.end ? new Date(ev.end) : null;
+                  if (endDate) {
+                    endDate.setDate(endDate.getDate() + 1);
+                  }
+
+                  // Elegimos color según categoría…
                   const colorCat =
                     ev.categoryId === 1
                       ? 'var(--primary)'
@@ -107,7 +145,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     id: ev.id,
                     title: ev.title,
                     start: ev.start,
-                    end: ev.end || null,
+                    end: endDate ? endDate.toISOString().slice(0, 10) : null,
+                    allDay: true, // ← aquí
                     backgroundColor: colorCat,
                     borderColor: colorCat,
                     textColor: '#ffffff',
@@ -273,7 +312,41 @@ document.addEventListener('DOMContentLoaded', async function () {
         );
       }
     },
+
+    // ─────────────────────────────────────────────────────────
+    //  (X) Aquí añadimos datesSet
+    // ─────────────────────────────────────────────────────────
+    datesSet: function (info) {
+      window.dispatchEvent(
+        new CustomEvent('fcViewChanged', {
+          detail: info.view.type,
+        })
+      );
+    },
   });
+
+  // ─────────────────────────────────────────────────────────
+  // Interceptar touchstart en celdas vacías para evitar
+  // que el mismo tap que abre el modal lo cierre inmediatamente
+  // ─────────────────────────────────────────────────────────
+  calendarEl.addEventListener('touchstart', function (e) {
+    // Si tocó un botón de toolbar o dentro de un evento, no interferir
+    if (
+      e.target.closest('.fc-toolbar') ||
+      e.target.closest('.fc-button') ||
+      e.target.closest('.fc-event') ||
+      e.target.closest('.fc-more-link') ||
+      e.target.closest('.fc-popover-close')
+    ) {
+      return;
+    }
+    // Sólo en celdas vacías (día vacío), bloqueamos la propagación
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  // Exponer la instancia globalmente para poder cambiar vista desde el sidebar
+  window.calendar = calendar;
 
   // ─────────────────────────────────────────────────────────
   //  4) Renderizamos el calendario
@@ -298,11 +371,11 @@ document.addEventListener('DOMContentLoaded', async function () {
   //  6) Aquí incluimos tu bloque que colorea los botones de FullCalendar
   //      ¡tal cual pediste, sin quitarlo!
   // ─────────────────────────────────────────────────────────
-  document.querySelectorAll('.fc .fc-button').forEach(function (btn) {
-    btn.style.setProperty('background-color', 'var(--primary)', 'important');
-    btn.style.setProperty('color', '#ffffff', 'important');
-    btn.style.setProperty('border', 'none', 'important');
-  });
+  // document.querySelectorAll('.fc .fc-button').forEach(function (btn) {
+  //   btn.style.setProperty('background-color', 'var(--primary)', 'important');
+  //   btn.style.setProperty('color', '#ffffff', 'important');
+  //   btn.style.setProperty('border', 'none', 'important');
+  // });
 
   // ─────────────────────────────────────────────────────────
   //  7) (Opcional) Resto de tu lógica: toggles de sidebar,

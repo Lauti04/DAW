@@ -56,7 +56,7 @@ try {
     );
     if ($stmt->execute([$nombre,$email,$hashed])) {
         $_SESSION['id_usuario'] = $pdo->lastInsertId();
-        $_SESSION['user_name']  = $nombre;
+        $_SESSION['nombre_usuario']  = $nombre;
 
         echo json_encode([
           'success'  => true,

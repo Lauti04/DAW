@@ -1,7 +1,7 @@
 <header class="sticky top-0 z-50 bg-white dark:bg-[var(--dark)] border-b border-gray-200 dark:border-gray-700">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
     <!-- Logo -->
-    <a href="../index.html" class="flex-shrink-0">
+    <a href="home.php" class="flex-shrink-0">
       <img id="logo-light"
            src="../assets/img/logos/logo2.png"
            alt="EventFlow Logo Light"
