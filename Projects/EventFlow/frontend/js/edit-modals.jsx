@@ -5,14 +5,22 @@
 
 // Modal para editar un evento existente.
 function EditEventModal({ existing, onClose, categorias }) {
-  const [fechaInicio, setFechaInicio] = React.useState(existing.fecha_inicio || '');
-  const [fechaFin, setFechaFin] = React.useState(existing.fecha_fin || '');
+  // 1) Formatea el valor inicial para eliminar segundos y zona
+  const formatInitial = (d) => {
+    if (!d) return '';
+    // quita “T”, zona y segundos: "2025-06-19T17:00:00+02:00" → "2025-06-19 17:00"
+    const cleaned = d.replace('T', ' ').replace(/\+\d{2}:\d{2}$/, '');
+    return cleaned.slice(0, 16);
+  };
+
+  const [fechaInicio, setFechaInicio] = React.useState(formatInitial(existing.fecha_inicio));
+  const [fechaFin, setFechaFin] = React.useState(formatInitial(existing.fecha_fin));
   const [dateError, setDateError] = React.useState(false);
   const [submitError, setSubmitError] = React.useState('');
   const refInicio = React.useRef(null);
   const refFin = React.useRef(null);
 
-  // Valida fechas siempre que cambian
+  // Valida fechas
   React.useEffect(() => {
     if (fechaInicio && fechaFin) {
       const startDate = new Date(fechaInicio.replace(' ', 'T'));
@@ -23,7 +31,7 @@ function EditEventModal({ existing, onClose, categorias }) {
     }
   }, [fechaInicio, fechaFin]);
 
-  // Flatpickr SOLO aquí, una vez
+  // Flatpickr SOLO al montar
   React.useEffect(() => {
     if (refInicio.current) {
       flatpickr(refInicio.current, {
@@ -32,9 +40,15 @@ function EditEventModal({ existing, onClose, categorias }) {
         defaultDate: fechaInicio || null,
         allowInput: false,
         plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
-        onChange: ([selected]) => {
-          const v = selected ? selected.toISOString().slice(0, 16).replace('T', ' ') : '';
-          setFechaInicio(v);
+        onChange: ([sel]) => {
+          if (!sel) return setFechaInicio('');
+          const pad = (n) => String(n).padStart(2, '0');
+          const y = sel.getFullYear(),
+            M = pad(sel.getMonth() + 1),
+            d = pad(sel.getDate()),
+            h = pad(sel.getHours()),
+            m = pad(sel.getMinutes());
+          setFechaInicio(`${y}-${M}-${d} ${h}:${m}`);
         },
       });
     }
@@ -45,9 +59,15 @@ function EditEventModal({ existing, onClose, categorias }) {
         defaultDate: fechaFin || null,
         allowInput: false,
         plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
-        onChange: ([selected]) => {
-          const v = selected ? selected.toISOString().slice(0, 16).replace('T', ' ') : '';
-          setFechaFin(v);
+        onChange: ([sel]) => {
+          if (!sel) return setFechaFin('');
+          const pad = (n) => String(n).padStart(2, '0');
+          const y = sel.getFullYear(),
+            M = pad(sel.getMonth() + 1),
+            d = pad(sel.getDate()),
+            h = pad(sel.getHours()),
+            m = pad(sel.getMinutes());
+          setFechaFin(`${y}-${M}-${d} ${h}:${m}`);
         },
       });
     }
@@ -274,7 +294,11 @@ function EditEventModal({ existing, onClose, categorias }) {
 }
 
 // Modal para editar una tarea existente.
-function EditTaskModal({ existing, onClose, categorias }) {
+function EditTaskModal({ existing, eventos, categorias, onClose }) {
+  // Estado para el evento seleccionado, inicializado con el valor de la BBDD
+  const [selectedEvento, setSelectedEvento] = React.useState(String(existing.id_evento_fk || ''));
+
+  // Envío del formulario: incluye id_evento_fk desde el estado controlado
   async function handleSubmit(e) {
     e.preventDefault();
     const form = e.target;
@@ -285,7 +309,8 @@ function EditTaskModal({ existing, onClose, categorias }) {
       descripcion: form.elements['descripcion'].value,
       fecha_vencimiento: form.elements['fecha_vencimiento'].value,
       prioridad: form.elements['prioridad'].value,
-      id_categoria_fk: form.elements['id_categoria_fk'].value,
+      id_categoria_fk: form.elements['id_categoria_fk'].value || null,
+      id_evento_fk: selectedEvento || null,
     };
     try {
       const res = await fetch('../backend/api/tareas.php', {
@@ -305,6 +330,7 @@ function EditTaskModal({ existing, onClose, categorias }) {
     }
   }
 
+  // Función para borrar la tarea
   const handleDelete = async () => {
     if (!confirm('¿Estás seguro de que deseas eliminar esta tarea?')) return;
     try {
@@ -331,7 +357,8 @@ function EditTaskModal({ existing, onClose, categorias }) {
       onClick={onClose}
     >
       <div
-        className=" bg-card dark:bg-dark p-6 rounded-lg w-full max-w-md mx-4 sm:mx-auto max-h-[calc(100vh-4rem)] overflow-y-auto animate-fade-in"
+        className="bg-card dark:bg-dark p-6 rounded-lg w-full max-w-md mx-4 sm:mx-auto
+                   max-h-[calc(100vh-4rem)] overflow-y-auto animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-heading text-text-dark dark:text-text-light mb-4 flex items-center space-x-2">
@@ -349,10 +376,13 @@ function EditTaskModal({ existing, onClose, categorias }) {
               name="titulo"
               id="titulo"
               defaultValue={existing.titulo}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md
+                         bg-secondary dark:bg-dark text-text-dark dark:text-text-light
+                         focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
+
           {/* Descripción */}
           <div className="mb-4">
             <label htmlFor="descripcion" className="block text-text-dark dark:text-text-light mb-1">
@@ -363,9 +393,12 @@ function EditTaskModal({ existing, onClose, categorias }) {
               id="descripcion"
               rows="3"
               defaultValue={existing.descripcion}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary max-h-40"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md
+                         bg-secondary dark:bg-dark text-text-dark dark:text-text-light
+                         focus:outline-none focus:ring-2 focus:ring-primary max-h-40"
             />
           </div>
+
           {/* Fecha de vencimiento */}
           <div className="mb-4">
             <label
@@ -377,18 +410,20 @@ function EditTaskModal({ existing, onClose, categorias }) {
             <div className="relative">
               <input
                 type="text"
-                readOnly // ← evita el picker nativo
+                readOnly
                 name="fecha_vencimiento"
                 id="fecha_vencimiento"
                 data-flatpickr
                 data-enable-time="true"
                 defaultValue={existing.fecha_vencimiento}
-                className="bg-secondary w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                className="bg-secondary w-full pl-10 p-2 border border-gray-300 dark:border-gray-600 rounded
+                           focus:outline-none focus:ring-2 focus:ring-primary text-text-dark dark:text-text-light"
                 required
               />
-              <i className="fas fa-calendar absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
+              <i className="fas fa-calendar absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-dark dark:text-text-light" />
             </div>
           </div>
+
           {/* Prioridad */}
           <div className="mb-4">
             <label htmlFor="prioridad" className="block text-text-dark dark:text-text-light mb-1">
@@ -398,15 +433,18 @@ function EditTaskModal({ existing, onClose, categorias }) {
               name="prioridad"
               id="prioridad"
               defaultValue={existing.prioridad}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md
+                         bg-secondary dark:bg-dark text-text-dark dark:text-text-light
+                         focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="baja">Baja</option>
               <option value="media">Media</option>
               <option value="alta">Alta</option>
             </select>
           </div>
+
           {/* Categoría */}
-          <div className="mb-6">
+          <div className="mb-4">
             <label
               htmlFor="id_categoria_fk"
               className="block text-text-dark dark:text-text-light mb-1"
@@ -416,9 +454,12 @@ function EditTaskModal({ existing, onClose, categorias }) {
             <select
               name="id_categoria_fk"
               id="id_categoria_fk"
-              defaultValue={existing.id_categoria_fk}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
+              defaultValue={existing.id_categoria_fk || ''}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md
+                         bg-secondary dark:bg-dark text-text-dark dark:text-text-light
+                         focus:outline-none focus:ring-2 focus:ring-primary"
             >
+              <option value="">Selecciona…</option>
               {categorias.map((cat) => (
                 <option key={cat.id_categoria} value={cat.id_categoria}>
                   {cat.nombre}
@@ -426,7 +467,34 @@ function EditTaskModal({ existing, onClose, categorias }) {
               ))}
             </select>
           </div>
-          {/* Botones: Cancelar, Guardar y Eliminar en la misma línea */}
+
+          {/* Relacionar con evento */}
+          <div className="mb-6">
+            <label
+              htmlFor="id_evento_fk"
+              className="block text-text-dark dark:text-text-light mb-1"
+            >
+              Relacionar con evento
+            </label>
+            <select
+              name="id_evento_fk"
+              id="id_evento_fk"
+              value={selectedEvento}
+              onChange={(e) => setSelectedEvento(e.target.value)}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md
+                         bg-secondary dark:bg-dark text-text-dark dark:text-text-light
+                         focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="">— Ninguno —</option>
+              {eventos.map((ev) => (
+                <option key={ev.id} value={ev.id}>
+                  {ev.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Botones */}
           <div className="flex flex-wrap gap-2 justify-end">
             <button
               type="button"

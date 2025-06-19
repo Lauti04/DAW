@@ -41,11 +41,11 @@
         <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
           <a href="register_view.php"
             class="btn-primary w-full sm:w-auto transform hover:scale-105 transition duration-300">
-            Regístrate gratis
+            Regístrate Gratis
           </a>
-          <a href="demo.php"
+          <a href="login_view.php"
             class="btn-tertiary w-full sm:w-auto transform hover:scale-105 transition duration-300">
-            Prueba el demo
+            Iniciar Sesión
           </a>
         </div>
       </div>

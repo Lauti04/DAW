@@ -38,12 +38,72 @@ document.addEventListener('DOMContentLoaded', async function () {
   //   });
   // });
 
+  // ─────────────────────────────────────────────────────
+  //  2.1) FUNCIONES DE RENDERIZADO DE EVENTOS (PRIORIDAD)
+  // ─────────────────────────────────────────────────────
+  // Render estándar (con circulito de prioridad para tareas)
+  function eventContentDefault(arg) {
+    let hora = arg.timeText || '';
+    if (hora && !hora.includes(':')) {
+      hora = hora + ':00';
+    }
+    if (hora) {
+      hora = hora + ' hs';
+    }
+
+    // Detecta si es una tarea para el circulito de prioridad
+    let circulito = '';
+    if (arg.event.extendedProps && arg.event.extendedProps.tipo === 'tarea') {
+      const prioridad = arg.event.extendedProps.prioridad;
+      let color = '';
+      if (prioridad === 'alta') color = 'bg-red-500';
+      else if (prioridad === 'media') color = 'bg-yellow-400';
+      else color = 'bg-green-500';
+      circulito = `<span class="inline-block w-3 h-3 rounded-full mr-2 border border-gray-300 ${color}"></span>`;
+    }
+
+    return {
+      html: `
+        <div class="fc-event-time text-xs font-medium">${hora}</div>
+        <div class="fc-event-title text-sm font-semibold">
+          ${circulito}${arg.event.title}
+        </div>
+      `,
+    };
+  }
+
+  // Render personalizado para la vista de AGENDA (texto prioridad)
+  function eventContentAgenda(arg) {
+    // Sin hora (agenda la pone sola)
+    let html = `<span class="fc-event-title text-sm font-semibold">${arg.event.title}</span>`;
+
+    if (arg.event.extendedProps && arg.event.extendedProps.tipo === 'tarea') {
+      let prioridad = arg.event.extendedProps.prioridad;
+      let label = '',
+        color = '';
+      if (prioridad === 'alta') {
+        label = 'Alta';
+        color = 'text-red-500 font-semibold';
+      } else if (prioridad === 'media') {
+        label = 'Media';
+        color = 'text-yellow-500 font-semibold';
+      } else {
+        label = 'Baja';
+        color = 'text-green-600 font-semibold';
+      }
+      html += `<span class="ml-2 ${color} text-xs align-middle rounded px-2 py-0.5 border border-gray-200">${label}</span>`;
+    }
+
+    return { html };
+  }
+
   // ───────────────────────────────────────────────────────────────────────────
   //    3) Inicialización de FullCalendar
   // ───────────────────────────────────────────────────────────────────────────
   // Detectar móvil vs escritorio
   const isMobile = window.innerWidth < 640;
   var calendar = new FullCalendar.Calendar(calendarEl, {
+    timeZone: 'local',
     locale: 'es',
     buttonText: {
       today: 'Hoy',
@@ -65,22 +125,31 @@ document.addEventListener('DOMContentLoaded', async function () {
     // ───────── Vista-específicas ─────────
     views: {
       dayGridMonth: {
-        fixedWeekCount: true, // 6 filas iguales
+        fixedWeekCount: true,
         contentHeight: () => {
-          // altura calculada sólo para mensual
           const rows = 6;
           const headerH = 40;
           const cellH = Math.floor((window.innerHeight - headerH) / rows);
           return headerH + cellH * rows;
         },
+        eventContent: eventContentDefault,
       },
       timeGridWeek: {
-        contentHeight: 'auto', // que auto-ajuste su altura
+        contentHeight: 'auto',
+        eventContent: eventContentDefault,
       },
       timeGridDay: {
         contentHeight: 'auto',
+        eventContent: eventContentDefault,
+      },
+      listWeek: {
+        eventContent: eventContentAgenda,
+      },
+      listDay: {
+        eventContent: eventContentAgenda,
       },
     },
+    eventContent: eventContentDefault,
     eventDisplay: 'block',
     // ────────────────────────────────────────────────────────────────────────
     headerToolbar: {
@@ -89,31 +158,13 @@ document.addEventListener('DOMContentLoaded', async function () {
       right: 'dayGridMonth,dayGridWeek,dayGridDay,listWeek',
     },
     editable: true,
+    eventLongPressDelay: 200, // ms antes de comenzar el drag en móvil
     selectable: true,
 
     // ─────────────────────────────────────────────────────────
     //  (A) Mostrar todos los eventos como “bloques” (no dots)
     // ─────────────────────────────────────────────────────────
     eventDisplay: 'block',
-
-    // ─────────────────────────────────────────────────────────
-    //  (B) Personalizar cómo se renderiza cada evento: hora + “hs” + título
-    // ─────────────────────────────────────────────────────────
-    eventContent: function (arg) {
-      let hora = arg.timeText || '';
-      if (hora && !hora.includes(':')) {
-        hora = hora + ':00';
-      }
-      if (hora) {
-        hora = hora + ' hs';
-      }
-      return {
-        html: `
-          <div class="fc-event-time text-xs font-medium">${hora}</div>
-          <div class="fc-event-title text-sm font-semibold">${arg.event.title}</div>
-        `,
-      };
-    },
 
     // ─────────────────────────────────────────────────────────
     //  (C) Fuentes: EVENTOS, TAREAS y RECORDATORIOS con colores dinámicos
@@ -127,42 +178,44 @@ document.addEventListener('DOMContentLoaded', async function () {
           fetch('../backend/api/eventos.php')
             .then((res) => res.json())
             .then((json) => {
-              if (json.success) {
-                const mapped = json.data.map((ev) => {
-                  // Calculamos un end “inclusivo”
-                  let endDate = ev.end ? new Date(ev.end) : null;
-                  if (endDate) {
-                    endDate.setDate(endDate.getDate() + 1);
-                  }
-
-                  // Elegimos color según categoría…
-                  const colorCat =
-                    ev.categoryId === 1
-                      ? 'var(--primary)'
-                      : categoriaColors[ev.categoryId] || 'var(--primary)';
-
-                  return {
-                    id: ev.id,
-                    title: ev.title,
-                    start: ev.start,
-                    end: endDate ? endDate.toISOString().slice(0, 10) : null,
-                    allDay: true, // ← aquí
-                    backgroundColor: colorCat,
-                    borderColor: colorCat,
-                    textColor: '#ffffff',
-                    extendedProps: {
-                      tipo: 'evento',
-                      descripcion: ev.descripcion,
-                      ubicacion: ev.ubicacion,
-                      categoryId: ev.categoryId,
-                    },
-                  };
-                });
-                successCallback(mapped);
-              } else {
+              if (!json.success) {
                 console.error('Error al cargar eventos:', json.error);
-                failureCallback(json.error);
+                return failureCallback(json.error);
               }
+
+              const mapped = json.data.map((ev) => {
+                // Cadena ISO-local para start/end (reemplazando ' ' por 'T')
+                const startStr = ev.start.slice(0, 16).replace(' ', 'T');
+                const endStr = ev.end ? ev.end.replace(' ', 'T') : null;
+
+                // Color según categoría
+                const colorCat =
+                  ev.categoryId === 1
+                    ? 'var(--primary)'
+                    : categoriaColors[ev.categoryId] || 'var(--primary)';
+
+                return {
+                  id: ev.id,
+                  title: ev.title,
+                  start: startStr, // e.g. "2025-06-08T07:00:00"
+                  end: endStr, // e.g. "2025-06-10T10:00:00" o null
+                  backgroundColor: colorCat,
+                  borderColor: colorCat,
+                  textColor: '#ffffff',
+                  extendedProps: {
+                    tipo: 'evento',
+                    descripcion: ev.descripcion,
+                    ubicacion: ev.ubicacion,
+                    categoryId: ev.categoryId,
+                  },
+                };
+              });
+
+              // console.log(
+              //   '→ Eventos mapeados (start/end):',
+              //   mapped.map((e) => [e.id, e.start, e.end])
+              // );
+              successCallback(mapped);
             })
             .catch((err) => {
               console.error('Error en fetch eventos:', err);
@@ -311,6 +364,61 @@ document.addEventListener('DOMContentLoaded', async function () {
           new CustomEvent('openModalEditarRecordatorio', { detail: existingRem })
         );
       }
+    },
+
+    eventDrop: function (info) {
+      // 1. Obtener los datos relevantes
+      const ev = info.event;
+      const tipo = ev.extendedProps.tipo;
+      let url = '';
+      let body = {};
+
+      // 2. Preparar request según tipo
+      if (tipo === 'evento') {
+        url = '../backend/api/eventos.php';
+        body = {
+          action: 'editar',
+          id_evento: ev.id,
+          fecha_inicio: ev.startStr.replace('T', ' '), // Formato YYYY-MM-DD HH:mm
+          fecha_fin: ev.endStr ? ev.endStr.replace('T', ' ') : null,
+        };
+      } else if (tipo === 'tarea') {
+        url = '../backend/api/tareas.php';
+        body = {
+          action: 'editar',
+          id_tarea: ev.id.replace('tarea-', ''),
+          fecha_vencimiento: ev.startStr.replace('T', ' '),
+        };
+      } else if (tipo === 'recordatorio') {
+        url = '../backend/api/recordatorios.php';
+        body = {
+          action: 'editar',
+          id_recordatorio: ev.id.replace('rem-', ''),
+          fecha_hora: ev.startStr.replace('T', ' '),
+        };
+      }
+
+      // 3. Hacer el fetch (POST)
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          if (!json.success) {
+            alert('Error al actualizar. Se revertirá el cambio.');
+            info.revert(); // Revierte el movimiento en el cliente si hay error
+          } else {
+            // Opcional: muestra notificación de éxito
+            // Y recarga los eventos (por si hay cambios secundarios)
+            window.dispatchEvent(new CustomEvent(tipo + 'sActualizados'));
+          }
+        })
+        .catch((err) => {
+          alert('Error de red. Se revierte el cambio.');
+          info.revert();
+        });
     },
 
     // ─────────────────────────────────────────────────────────

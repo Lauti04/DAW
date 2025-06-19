@@ -156,12 +156,18 @@ function EventModal({ initialDate, onClose, onSwitch, categorias }) {
       flatpickr(refInicio.current, {
         dateFormat: 'Y-m-d H:i',
         enableTime: true,
-        defaultDate: fechaInicio || null,
+        defaultDate: fechaInicio,
         allowInput: false,
         plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
-        onChange: ([selected]) => {
-          const v = selected ? selected.toISOString().slice(0, 16).replace('T', ' ') : '';
-          setFechaInicio(v);
+        onChange: ([sel]) => {
+          if (!sel) return setFechaInicio('');
+          const pad = (n) => String(n).padStart(2, '0');
+          const y = sel.getFullYear(),
+            M = pad(sel.getMonth() + 1),
+            d = pad(sel.getDate()),
+            h = pad(sel.getHours()),
+            m = pad(sel.getMinutes());
+          setFechaInicio(`${y}-${M}-${d} ${h}:${m}`);
         },
       });
     }
@@ -169,12 +175,18 @@ function EventModal({ initialDate, onClose, onSwitch, categorias }) {
       flatpickr(refFin.current, {
         dateFormat: 'Y-m-d H:i',
         enableTime: true,
-        defaultDate: fechaFin || null,
+        defaultDate: fechaFin,
         allowInput: false,
         plugins: [new confirmDatePlugin({ confirmText: 'OK' })],
-        onChange: ([selected]) => {
-          const v = selected ? selected.toISOString().slice(0, 16).replace('T', ' ') : '';
-          setFechaFin(v);
+        onChange: ([sel]) => {
+          if (!sel) return setFechaFin('');
+          const pad = (n) => String(n).padStart(2, '0');
+          const y = sel.getFullYear(),
+            M = pad(sel.getMonth() + 1),
+            d = pad(sel.getDate()),
+            h = pad(sel.getHours()),
+            m = pad(sel.getMinutes());
+          setFechaFin(`${y}-${M}-${d} ${h}:${m}`);
         },
       });
     }
@@ -342,7 +354,22 @@ function EventModal({ initialDate, onClose, onSwitch, categorias }) {
 }
 
 // Task creation modal
-function TaskModal({ initialDate, onClose, onSwitch, categorias }) {
+// frontend/js/react-modals.jsx
+
+function TaskModal({ initialDate, onClose, onSwitch, categorias, usuarioId }) {
+  const [eventos, setEventos] = React.useState([]);
+
+  // Cargar eventos del usuario al montar el modal
+  React.useEffect(() => {
+    fetch('../backend/api/eventos.php')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success) setEventos(json.data);
+        else setEventos([]);
+      })
+      .catch(() => setEventos([]));
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
     const form = e.target;
@@ -353,6 +380,7 @@ function TaskModal({ initialDate, onClose, onSwitch, categorias }) {
       fecha_vencimiento: form.elements['fecha_vencimiento'].value,
       prioridad: form.elements['prioridad'].value,
       id_categoria_fk: form.elements['id_categoria_fk'].value,
+      id_evento_fk: form.elements['id_evento_fk'].value || null,
     };
     try {
       const res = await fetch('../backend/api/tareas.php', {
@@ -454,6 +482,24 @@ function TaskModal({ initialDate, onClose, onSwitch, categorias }) {
                 ))}
               </select>
             </div>
+          </div>
+          {/* Relacionar con evento */}
+          <div>
+            <label className="block text-text-dark dark:text-text-light mb-1">
+              Relacionado a evento
+            </label>
+            <select
+              name="id_evento_fk"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-secondary dark:bg-dark text-text-dark dark:text-text-light focus:outline-none focus:ring-2 focus:ring-primary"
+              defaultValue=""
+            >
+              <option value="">Ninguno</option>
+              {eventos.map((ev) => (
+                <option key={ev.id} value={ev.id}>
+                  {ev.title}
+                </option>
+              ))}
+            </select>
           </div>
           {/* Acciones */}
           <div className="flex justify-end space-x-2 mt-4">
@@ -568,6 +614,9 @@ function App() {
   // Estado para categorías
   const [categorias, setCategorias] = useState([]);
 
+  // Estado para lista de eventos, cargada antes de abrir cualquier modal de tarea
+  const [eventosList, setEventosList] = useState([]);
+
   // Cargar categorías al montar App
   useEffect(() => {
     fetch('../backend/api/categorias.php', {
@@ -584,6 +633,17 @@ function App() {
         }
       })
       .catch((err) => console.error('Error de red al cargar categorías:', err));
+  }, []);
+
+  // Cargar eventos al montar App (una sola vez)
+  useEffect(() => {
+    fetch('../backend/api/eventos.php')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success) setEventosList(json.data);
+        else console.error('Error cargando eventos:', json.error);
+      })
+      .catch((err) => console.error('Error de red al cargar eventos:', err));
   }, []);
 
   // Escuchar tanto openModal como los eventos de editar (evento, tarea y recordatorio)
@@ -716,9 +776,19 @@ function App() {
       );
     case 'tarea':
       return modal.existing ? (
-        <EditTaskModal existing={modal.existing} onClose={common.onClose} categorias={categorias} />
+        <EditTaskModal
+          existing={modal.existing}
+          eventos={eventosList} // ¡aquí pasamos la lista ya cargada!
+          categorias={categorias}
+          onClose={common.onClose}
+        />
       ) : (
-        <TaskModal {...common} categorias={categorias} existing={null} />
+        <TaskModal
+          {...common}
+          categorias={categorias}
+          eventos={eventosList} // opcional: para evitar otro fetch
+          existing={null}
+        />
       );
     case 'recordatorio':
       return modal.existing ? (
