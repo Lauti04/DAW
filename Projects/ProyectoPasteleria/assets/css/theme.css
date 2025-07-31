@@ -1,0 +1,5 @@
+html {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-out !important;
+}

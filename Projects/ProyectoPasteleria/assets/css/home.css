@@ -1,0 +1,172 @@
+/*-------------------- SLIDER --------------------*/
+/* Tamaño y estilo de la imagen del slider */
+.home-slider .carousel-item img {
+    height: 90vh !important;
+    object-fit: cover !important;
+    width: 100% !important;
+}
+
+/* Overlay para oscurecer la imagen */
+.carousel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Ajusta la opacidad según necesites */
+    z-index: 5;
+}
+
+/* Caption centrado */
+.carousel-caption.caption-center {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    text-align: center;
+    width: 80%;
+    z-index: 10;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Contenedor interno que se animará */
+.caption-inner {
+    opacity: 0;
+}
+
+/* Estilos para el título, párrafo y botón dentro del caption */
+.carousel-caption.caption-center h2 {
+    font-family: var(--font-primary);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.carousel-caption.caption-center p {
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.carousel-caption.caption-center a.btn {
+    margin-top: 1rem;
+}
+
+.carousel-control-next,
+.carousel-control-prev,
+.carousel-indicators {
+    z-index: 999 !important;
+}
+
+.home-slider .carousel-caption.caption-center h2 {
+    font-size: clamp(2rem, 5vw + 1rem, 3.5rem) !important;
+}
+
+.home-slider .carousel-caption.caption-center p {
+    font-size: clamp(1rem, 2.5vw + 0.8rem, 1.5rem) !important;
+}
+
+/* Clase que activa la animación en el contenido interno */
+.caption-inner.animate {
+    animation: slideDown 1s ease-out forwards !important;
+}
+
+/* Keyframes para la animación: solo movimiento vertical y opacidad */
+@keyframes slideDown {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.carousel-indicators {
+    margin-bottom: 5rem !important;
+}
+
+section {
+    scroll-margin-top: 200px; 
+}
+
+#inicio {
+    scroll-margin-top: 200px;
+}
+
+.home-slider {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.carousel-item {
+    background-color: var(--secondary-color);
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.carousel-caption .caption-inner {
+    /* Inicialmente sin opacidad o con la posición inicial deseada */
+    opacity: 0;
+    transform: translateY(-30px);
+}
+
+.carousel-caption .caption-inner.animate {
+    opacity: 1;
+    transform: translateY(0);
+    transition: transform 1s ease-out, opacity 1s ease-out;
+}
+
+
+/*-------------------- DESCUENTOS --------------------*/
+.descuentos{
+    background-color: var(--primary-color);
+    width: 100% !important;
+}
+
+
+/*-------------------- TESTIMONIALS --------------------*/
+.testimonio {
+    padding: 3rem 0 !important;
+}
+
+
+/*-------------------- REPARACION DE COLORES PARA EL MODO DARK --------------------*/
+.tarjetas {
+    background-color: var(--white);
+}
+
+[data-theme="dark"] .tarjetas {
+    color: var(--fixed-white);
+    border: none !important;
+}
+
+
+[data-theme="dark"] #servicios h2{
+    color: var(--fixed-white) !important;
+}
+
+
+[data-theme="dark"] .card-body{
+    color: var(--dark-text) !important;
+}
+
+[data-theme="dark"] .miOverlay{
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] #pedidos{   
+    background-color: var(--secondary-color) !important;
+    color: var(--white) !important;
+}
+
+
+/*-------------------- DEMAS ESTILOS HECHOS DESDE BOOTSTRAP --------------------*/

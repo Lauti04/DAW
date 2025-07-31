@@ -1,0 +1,96 @@
+/* Contenedor del menú flotante */
+.floating-social {
+    position: fixed;
+    bottom: 90px; /* Se eleva para no tapar el botón de WhatsApp */
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Contenedor de íconos, inicialmente oculto */
+  .floating-social .social-menu {
+    display: none;
+    margin-bottom: 10px;
+    flex-direction: column;
+  }
+  
+  /* Se muestra el menú al togglear */
+  .floating-social.show .social-menu {
+    display: flex;
+  }
+  
+  /* Enlaces de redes sociales */
+  .floating-social .social-link {
+    background: #fff;
+    color: #333;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .floating-social .social-link:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Botón de social toggle personalizado */
+  .floating-social .social-toggle {
+    background-color: var(--fixed-accent); /* Color basado en tu paleta */
+    color: var(--fixed-white); /* Asegura contraste */
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .floating-social .social-toggle:hover {
+    background-color: var(--secondary-color); /* Cambia al pasar el cursor */
+  }
+  
+  /* Botón flotante de WhatsApp */
+  .floating-whatsapp {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #25D366;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+    font-size: 1.5rem;
+  }
+  
+  /* Responsive: ajustes en pantallas pequeñas */
+  @media (max-width: 576px) {
+    .floating-social {
+      right: 10px;
+      bottom: 80px;
+    }
+    
+    .floating-whatsapp {
+      right: 10px;
+      bottom: 10px;
+    }
+  }
+  

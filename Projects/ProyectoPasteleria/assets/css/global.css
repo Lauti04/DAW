@@ -1,0 +1,313 @@
+/* Variables para modo claro (por defecto) */
+:root {
+  --primary-color: #FFC0CB;       /* Rosa pastel */
+  --secondary-color: #A7D8DE;       /* Azul pastel (celeste) */
+  --accent-color: #5D4037;          /* Chocolate oscuro */
+  --bg-color: #FFF8E7;              /* Fondo crema */
+  --white: #fff;                   /* Blanco */
+  --text-color: var(--accent-color);/* Texto principal en light */
+  --font-primary: 'Montserrat', sans-serif;
+  --font-secondary: 'Lato', sans-serif;
+  --dark-text: #212529;
+
+
+
+  /* Variables para el botón de toggle */
+  --toggle-bg: #d3d3d3;             /* Fondo del botón en modo claro: gris claro */
+  --toggle-ball-bg: #fff;           /* Fondo del toggle ball en modo claro: blanco */
+  --toggle-ball-icon-color: #000;   /* Ícono (sol) en modo claro: negro */
+
+  /* Variables fijas para mantener colores específicos en ambos temas */
+  --fixed-primary: #FFC0CB;         /* Por ejemplo, para mantener el rosa pastel */
+  --fixed-secondary: #A7D8DE;         /* Si quieres usar siempre el celeste original */
+  --fixed-accent: #5D4037;          /* Se mantiene el chocolate oscuro para algunos textos */
+  --fixed-white: #ffffff;           /* Se mantiene el blanco para algunos textos */
+  --fixed-bg-color: #FFF8E7;              /* Fondo crema */
+}
+
+/* Variables para modo oscuro */
+[data-theme="dark"] {
+  --bg-color: #121212;             /* Fondo general oscuro */
+  --primary-color: #1C1C1C;         /* Se mantiene el rosa pastel para detalles */
+  --secondary-color: #000;          /* Se reemplaza el celeste por negro para algunos fondos (ej. header) */
+  --accent-color: #fff;             /* Se invierte para buen contraste en textos */
+  --white: #1e1e1e;                 /* Fondos de contenedores que eran blancos ahora serán gris muy oscuro */
+  --text-color: #fff;
+  --dark-text: #fff;
+
+  
+  /* Variables para el botón de toggle en modo oscuro */
+  --toggle-bg: #333;                /* Fondo del botón en modo oscuro: gris muy oscuro */
+  --toggle-ball-bg: #000;           /* Fondo del toggle ball: negro */
+  --toggle-ball-icon-color: #fff;   /* Ícono (luna) en modo oscuro: blanco */
+  --bs-border-width: 0px !important;
+
+}
+
+
+
+
+/* Reset Básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-secondary) !important;
+  background-color: var(--bg-color) !important;
+  color: var(--accent-color) !important;
+  line-height: 1.6 !important;
+}
+
+/* Encabezados (H1 a H6) con la fuente principal para mayor impacto */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary) !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Estilos para párrafos y otros textos */
+p {
+  margin-bottom: 1rem !important;
+}
+
+/* Estilos para enlaces */
+a {
+  text-decoration: none !important;
+  transition: color 0.3s ease !important;
+}
+
+
+/* Tipografía Responsiva */
+
+/* H1: tamaño mínimo de 2rem, escala preferida y máximo de 3rem */
+h1 {
+  font-size: clamp(2rem, 5vw + 1rem, 3rem) !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+}
+
+/* H2: tamaño mínimo de 1.75rem, escala preferida y máximo de 2.5rem */
+h2 {
+  font-size: clamp(1.75rem, 4vw + 1rem, 2.5rem) !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+}
+
+/* H3: tamaño mínimo de 1.5rem, escala preferida y máximo de 2rem */
+h3 {
+  font-size: clamp(1.5rem, 3vw + 1rem, 2rem) !important;
+  font-weight: 500 !important;
+  margin-bottom: 1rem !important
+}
+
+/* H4: tamaño mínimo de 1.25rem, escala preferida y máximo de 1.75rem */
+h4 {
+  font-size: clamp(1.25rem, 2.5vw + 1rem, 1.75rem) !important;
+  font-weight: 500 !important;
+  margin-bottom: 1rem !important;
+}
+
+/* H5: tamaño mínimo de 1rem, escala preferida y máximo de 1.5rem */
+h5 {
+  font-size: clamp(1rem, 2vw + 1rem, 1.5rem) !important;
+  font-weight: 400 !important;
+  margin-bottom: 1rem !important;
+}
+
+/* H6: tamaño mínimo de 0.875rem, escala preferida y máximo de 1.25rem */
+h6 {
+  font-size: clamp(0.875rem, 1.5vw + 1rem, 1.25rem) !important;
+  font-weight: 400 !important;
+  margin-bottom: 1rem !important; 
+}
+
+/* Párrafos */
+p {
+  font-size: clamp(1rem, 1.5vw + 0.5rem, 1.125rem) !important;
+  font-weight: 400 !important;
+  margin-bottom: 1rem !important;
+}
+
+
+/* Botones Globales */
+.btn {
+  display: inline-block !important;
+  font-family: var(--font-primary) !important;
+  font-size: 1rem !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: color 0.4s ease, background-color 0.4s ease !important;
+}
+
+/* Efecto overlay diagonal */
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: skewX(-45deg);
+  transition: left 0.4s ease;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+/* Botón primario */
+.btn-primary {
+  background-color: var(--fixed-primary) !important;
+  color: var(--fixed-accent) !important;
+}
+
+.btn-primary:hover {
+  background-color: #FFB0C0; /* Variante de rosa al hacer hover */
+  color: var(--fixed-bg-color);
+}
+
+/* Botón secundario */
+.btn-secondary {
+  background-color: var(--fixed-secondary) !important;
+  color: var(--fixed-accent) !important;
+}
+
+.btn-secondary:hover {
+  background-color: #96C8CF !important; /* Variante de azul al hacer hover */
+  color: var(--fixed-bg-color) !important;
+}
+
+/* Botón acento */
+.btn-accent {
+  background-color: var(--fixed-accent) !important;
+  color: var(--fixed-white) !important;
+}
+
+.btn-accent:hover {
+  background-color: #4A322E !important; /* Tono más oscuro de chocolate */
+  color: var(--fixed-bg-color) !important;
+}
+
+/* Botón outline */
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-outline:hover {
+  background-color: var(--accent-color);
+  color: var(--white);
+}
+
+/* Estilos para las fuentes globales */
+.montserrat-montserrat {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.lato-thin {
+  font-family: "Lato", serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.lato-light {
+  font-family: "Lato", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.lato-regular {
+  font-family: "Lato", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.lato-bold {
+  font-family: "Lato", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.lato-black {
+  font-family: "Lato", serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.lato-thin-italic {
+  font-family: "Lato", serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.lato-light-italic {
+  font-family: "Lato", serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.lato-regular-italic {
+  font-family: "Lato", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.lato-bold-italic {
+  font-family: "Lato", serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.lato-black-italic {
+  font-family: "Lato", serif;
+  font-weight: 900;
+  font-style: italic;
+}
+
+
+.seccion-extra {
+  padding-top: 6rem !important;
+  padding-bottom: 6rem !important;
+}
+
+.seccion-menos{
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+.boton{
+  max-width: 200px;
+}
+
+.icon-size {
+  width: 4em;
+  height: 3em;
+  object-fit: contain; /* Asegura que la imagen se mantenga proporcional */
+  display: inline-block;
+}
+
+.margen{
+  margin-bottom: 6rem !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.rounded {
+  border-radius: 1rem !important;
+}

@@ -1,0 +1,48 @@
+h1{
+    margin-top: 100px !important;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.botonesAdmin{
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.headingUser{
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user{
+    display: flex;
+    align-items: center;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form button{
+    width: 130px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none !important; /* Quita el contorno predeterminado */
+    border: 2px solid var(--primary-color) !important; /* Cambia el color del borde */
+    box-shadow: 0 0 8px var(--primary-color) !important; /* Agrega un efecto de resplandor */
+}
+
+footer{
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
