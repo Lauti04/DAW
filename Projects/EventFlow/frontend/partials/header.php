@@ -104,5 +104,4 @@
     </nav>
   </div>
 
-  <script src="../js/dark_mode.js"></script>
 </header>
