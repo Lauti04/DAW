@@ -35,7 +35,7 @@
       <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container">
           <!-- Logo -->
-          <a class="navbar-brand" href="/ProyectoPasteleria/templates/home.php#inicio">
+          <a class="navbar-brand" href="../templates/home.php#inicio">
             <img class="logo" src="../assets/images/logo/Dulce_Encanto_Logo.png" alt="Logo Dulce Encanto">
           </a>
           <!-- Botón de menú para móvil -->
@@ -49,13 +49,13 @@
             <ul class="navbar-nav">
               <!-- Enlaces principales -->
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/ProyectoPasteleria/templates/home.php#inicio">Inicio</a>
+                <a class="nav-link active" aria-current="page" href="../templates/home.php#inicio">Inicio</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/ProyectoPasteleria/templates/home.php#personalizados">Personalizados</a>
+                <a class="nav-link" href="../templates/home.php#personalizados">Personalizados</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/ProyectoPasteleria/templates/home.php#pedidos">Pedidos</a>
+                <a class="nav-link" href="../templates/home.php#pedidos">Pedidos</a>
               </li>
               <!-- Dropdown con icono de flecha -->
               <li class="nav-item dropdown">
@@ -64,11 +64,11 @@
                   Más Secciones <i class="fas fa-chevron-down"></i> <!-- Icono de flecha -->
                 </a>
                 <ul class="dropdown-menu custom-dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="/ProyectoPasteleria/templates/home.php#promocion">Promoción de Invierno</a></li>
-                  <li><a class="dropdown-item" href="/ProyectoPasteleria/templates/home.php#sabores">Nuevos Sabores</a></li>
-                  <li><a class="dropdown-item" href="/ProyectoPasteleria/templates/home.php#servicios">Servicios y Beneficios</a></li>
-                  <li><a class="dropdown-item" href="/ProyectoPasteleria/templates/home.php#diferenciales">Lo que Nos Hace Únicos</a></li>
-                  <li><a class="dropdown-item" href="/ProyectoPasteleria/templates/home.php#testimonios">Testimonios</a></li>
+                  <li><a class="dropdown-item" href="../templates/home.php#promocion">Promoción de Invierno</a></li>
+                  <li><a class="dropdown-item" href="../templates/home.php#sabores">Nuevos Sabores</a></li>
+                  <li><a class="dropdown-item" href="../templates/home.php#servicios">Servicios y Beneficios</a></li>
+                  <li><a class="dropdown-item" href="../templates/home.php#diferenciales">Lo que Nos Hace Únicos</a></li>
+                  <li><a class="dropdown-item" href="../templates/home.php#testimonios">Testimonios</a></li>
                 </ul>
               </li>
               <!-- Enlaces a páginas externas -->

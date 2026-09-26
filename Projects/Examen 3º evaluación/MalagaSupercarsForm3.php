@@ -1,20 +1,8 @@
 <?php
 session_start();
 
-// Conexión a la base de datos
-// 3307
-$servername = "localhost:3309";
-$username = "insert_delete_user";
-$password = "1234";
-$dbname = "malagasupercars";
-
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verificar conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
-}
+require_once __DIR__ . '/config.php';
+$conn = db_mysqli();
 
 // Obtener los datos del formulario
 $email = $_POST['email'];
@@ -33,7 +21,7 @@ $result = $stmt->get_result();
 // Verificar si el usuario existe y si la contraseña es correcta
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    if ($password === $row['password']) {
+    if (password_verify($password, $row['password'])) {
         // Si la contraseña es correcta, eliminar el usuario
         $id_usuario = $row['id_usuario'];
         $delete_sql = "DELETE FROM Usuarios WHERE id_usuario = ?";

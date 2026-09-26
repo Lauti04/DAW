@@ -1,1 +1,17 @@
 .DS_Store
+
+# Secrets: real database credentials live here, never in git
+config.local.php
+.env
+.env.*
+!.env.example
+
+# Dependencies and OS junk
+node_modules/
+.DS_Store
+
+# Runtime files
+notified.db
+
+# Deployment build output
+deploy/dist/

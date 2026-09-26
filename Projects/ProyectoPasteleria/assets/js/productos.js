@@ -17,7 +17,7 @@ class Producto {
         const nombreFormateado = nombre.toLowerCase()
             .replace(/ /g, '-')
             .replace(/[áéíóú]/g, letra => 'aeiou'['áéíóú'.indexOf(letra)]);
-        return `https://lautidev.com/ProyectoPasteleria/assets/images/productos/${nombreFormateado}.webp`;
+        return `../assets/images/productos/${nombreFormateado}.webp`;
     }
 }
 

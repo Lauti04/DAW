@@ -1,26 +1,20 @@
 <?php
-$host = "localhost"; 
-$dbname = "u214508706_pasteleria"; 
-$user = "u214508706_lauti";
-$pass = "kF0]Yi0qr#"; 
+require_once __DIR__ . '/config.php';
+
+$db = db_settings();
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
+    $conn = new PDO(
+        "mysql:host={$db['host']};port={$db['port']};dbname={$db['name']};charset=utf8",
+        $db['user'],
+        $db['pass']
+    );
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
+    // El detalle va al log del servidor; al usuario no se le expone el host ni el usuario.
+    error_log('Dulce Encanto DB connection failed: ' . $e->getMessage());
+    http_response_code(500);
+    die('Error de conexión con la base de datos.');
 }
-?>
-<!-- <?php
-// $host = "127.0.0.1"; 
-// $dbname = "pasteleria"; 
-// $user = "root";
-// $pass = ""; 
 
-// try {
-//     $conn = new PDO("mysql:host=$host;port=3309;dbname=$dbname;charset=utf8", $user, $pass);
-//     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-// } catch (PDOException $e) {
-//     die("Error de conexión: " . $e->getMessage());
-// }
-?> -->
+unset($db);

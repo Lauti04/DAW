@@ -85,14 +85,17 @@
     try {
         // Establecer la conexión con la base de datos
         // 3307
-        $pdo = new PDO("mysql:host=localhost;port=3309;dbname=malagasupercars", "select_user", "1234");
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        require_once __DIR__ . '/config.php';
+        $pdo = db_pdo();
 
-        // Definir las variables a partir de $_GET
-        $marca = isset($_GET['marca']) ? $_GET['marca'] : NULL;
-        $modelo = isset($_GET['modelo']) ? $_GET['modelo'] : NULL;
-        $precio_max = isset($_GET['precio_max']) ? $_GET['precio_max'] : NULL;
-        $anio = isset($_GET['anio']) ? $_GET['anio'] : NULL;
+        // Definir las variables a partir de $_GET.
+        // Los campos vacíos del formulario llegan como "" y una base de datos en modo estricto
+        // rechaza "" en parámetros numéricos (y un "0" en texto se lee como el año 2000).
+        // El procedimiento trata NULL como "sin filtro", así que los vacíos se envían como NULL.
+        $marca = trim($_GET['marca'] ?? '') ?: null;
+        $modelo = trim($_GET['modelo'] ?? '') ?: null;
+        $precio_max = is_numeric($_GET['precio_max'] ?? '') ? $_GET['precio_max'] : null;
+        $anio = is_numeric($_GET['anio'] ?? '') ? (int) $_GET['anio'] : null;
 
         // Preparar la consulta SQL
         $sql = "CALL mostrar_coches_filtrados(:marca, :modelo, :precio_max, :anio)";
@@ -101,11 +104,11 @@
         // Preparar la sentencia
         $stmt = $pdo->prepare($sql);
 
-        // Asignar parámetros
-        $stmt->bindValue(':marca', htmlspecialchars($marca));
-        $stmt->bindValue(':modelo', htmlspecialchars($modelo));
-        $stmt->bindValue(':precio_max', htmlspecialchars($precio_max));
-        $stmt->bindValue(':anio', htmlspecialchars($anio));
+        // Asignar parámetros (sentencia preparada: no hace falta escapar el valor)
+        $stmt->bindValue(':marca', $marca);
+        $stmt->bindValue(':modelo', $modelo);
+        $stmt->bindValue(':precio_max', $precio_max);
+        $stmt->bindValue(':anio', $anio);
 
         // Ejecutar la consulta
         $stmt->execute();

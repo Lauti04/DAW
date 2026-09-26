@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'crear':
             $titulo       = trim($payload['titulo'] ?? '');
             $fechaInicio  = trim($payload['fecha_inicio'] ?? '');
-            $fechaFin     = trim($payload['fecha_fin'] ?? null);
+            $fechaFin     = trim($payload['fecha_fin'] ?? '');
             $descripcion  = trim($payload['descripcion'] ?? '');
             $ubicacion    = trim($payload['ubicacion'] ?? '');
             $idCategoria  = $payload['id_categoria'] ?? null;

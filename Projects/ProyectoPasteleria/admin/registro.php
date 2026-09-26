@@ -24,7 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(":apellidos", $apellidos);
         $stmt->bindParam(":nacimiento", $nacimiento);
         $stmt->bindParam(":user", $user);
-        $stmt->bindParam(":pass", $pass);
+        $passHash = password_hash($pass, PASSWORD_DEFAULT);
+        $stmt->bindParam(":pass", $passHash);
 
         if ($stmt->execute()) {
             header("Location: login.php?registro=exito"); 

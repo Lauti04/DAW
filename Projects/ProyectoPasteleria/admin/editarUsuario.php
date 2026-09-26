@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user       = trim($_POST["user"]);
 
     if (!empty($_POST["pass"])) {
-        $password = $_POST["pass"];
+        $password = password_hash($_POST["pass"], PASSWORD_DEFAULT);
         $sql = "UPDATE usuarios 
                 SET nombre = :nombre, 
                     apellidos = :apellidos, 

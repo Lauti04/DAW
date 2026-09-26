@@ -1,5 +1,10 @@
 <?php
 // send_notifications.php
+// Script pensado para ejecutarse por cron / terminal, nunca desde el navegador.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit;
+}
 
 // 1) Mostrar errores y DEBUG
 ini_set('display_errors', 1);

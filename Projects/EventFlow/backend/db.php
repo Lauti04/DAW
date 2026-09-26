@@ -1,21 +1,22 @@
 <?php
-// Datos de conexión
-$host = 'srv1590.hstgr.io';
-$dbName = 'u214508706_EventFlow';
-$username = 'u214508706_lautaro';
-$password = '3L^!Y|a]cT';
+require_once __DIR__ . '/config.php';
+
+$db = db_settings();
 
 try {
-    // Crear una instancia de PDO
-    $pdo = new PDO("mysql:host=$host;dbname=$dbName;charset=utf8mb4", $username, $password);
-    
-    // Configurar PDO para que lance excepciones ante errores
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO(
+        "mysql:host={$db['host']};port={$db['port']};dbname={$db['name']};charset=utf8mb4",
+        $db['user'],
+        $db['pass']
+    );
 
-    // Mensaje de confirmación para la conexión (para pruebas)
-    // echo "Conexión exitosa a la base de datos.";
+    // Lanzar excepciones ante errores de SQL
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    // En caso de error, se muestra el mensaje y se detiene la ejecución
-    die("Error de conexión: " . $e->getMessage());
+    // El detalle va al log del servidor; al usuario no se le expone el host ni el usuario.
+    error_log('EventFlow DB connection failed: ' . $e->getMessage());
+    http_response_code(500);
+    die('Error de conexión con la base de datos.');
 }
-?>
+
+unset($db);

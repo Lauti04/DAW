@@ -1,18 +1,6 @@
 <?php
-// Datos de conexión a la base de datos
-// $servername = "localhost:3307";
-$servername = "localhost:3309";
-$username = "select_user"; 
-$password = "1234"; 
-$database = "malagasupercars"; 
-
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Verificar la conexión
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+require_once __DIR__ . '/config.php';
+$conn = db_mysqli();
 
 // Función para consultar un usuario por correo electrónico y contraseña
 function consultarUsuario($conn, $email, $password) {
@@ -20,7 +8,12 @@ function consultarUsuario($conn, $email, $password) {
     $stmt->bind_param("ss", $email, $password);
     $stmt->execute();
     $result = $stmt->get_result();
-    return $result->fetch_assoc();
+    $usuario = $result->fetch_assoc();
+    // El procedimiento devuelve el usuario por email; la contraseña se comprueba aquí contra el hash.
+    if ($usuario && password_verify($password, $usuario['password'])) {
+        return $usuario;
+    }
+    return null;
 }
 
 // Si se envió el formulario de inicio de sesión

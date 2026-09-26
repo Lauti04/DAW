@@ -1,16 +1,6 @@
 <?php
-// Conectar a la base de datos
-$servername = "localhost:3309";
-$username = "insert_delete_user";
-$password = "1234";
-$dbname = "malagasupercars";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verificar la conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
-}
+require_once __DIR__ . '/config.php';
+$conn = db_mysqli();
 
 // Verificar si se envió el formulario de inserción
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["action"] == "register") {
