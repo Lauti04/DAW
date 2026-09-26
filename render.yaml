@@ -1,0 +1,15 @@
+# Render Blueprint: one free web service that serves all four demos.
+# Render dashboard -> New -> Blueprint -> pick this repo/branch. See deploy/DEPLOY.md.
+services:
+  - type: web
+    name: lautaro-demos          # becomes https://<name>.onrender.com (must be unique; rename if taken)
+    runtime: docker
+    plan: free
+    region: frankfurt            # closest to Spain
+    dockerfilePath: ./deploy/Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: RESET_EVERY_HOURS   # demo data is reloaded this often (0 = never)
+        value: "6"

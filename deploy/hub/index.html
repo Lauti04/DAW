@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lautaro Johnston · Demos en vivo</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { color-scheme: dark; --bg:#0b0d12; --card:#11141b; --border:#232733; --fg:#e6e8ee; --muted:#9aa3b2; --accent:#818cf8; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width:880px; margin:0 auto; padding:56px 20px 72px; }
+  h1 { font-size:clamp(1.8rem,4vw,2.4rem); letter-spacing:-.02em; margin:0 0 8px; }
+  p.lead { color:var(--muted); margin:0 0 32px; max-width:60ch; }
+  .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); }
+  a.card { display:block; text-decoration:none; color:inherit; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; transition:border-color .2s, transform .2s; }
+  a.card:hover, a.card:focus-visible { border-color:var(--accent); transform:translateY(-2px); outline:none; }
+  h2 { margin:0 0 6px; font-size:1.15rem; }
+  .stack { color:var(--muted); font-size:.85rem; margin:0 0 10px; font-family:ui-monospace,Menlo,monospace; }
+  .login { margin-top:12px; font-size:.85rem; color:var(--muted); }
+  code { background:#161922; border:1px solid var(--border); border-radius:6px; padding:1px 6px; color:var(--fg); font-size:.85em; }
+  footer { margin-top:36px; color:var(--muted); font-size:.85rem; }
+  @media (max-width:420px) { .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Demos en vivo</h1>
+  <p class="lead">Proyectos de Lautaro Johnston funcionando de verdad, con base de datos. Prueba a registrarte, filtrar o crear datos: todo se restablece automáticamente cada pocas horas.<br>
+  <span lang="en">Live, database-backed demos of my projects. Try registering, filtering or creating data: everything resets automatically every few hours.</span></p>
+
+  <div class="grid">
+    <a class="card" href="eventflow/">
+      <h2>EventFlow</h2>
+      <p class="stack">PHP · MySQL · JavaScript · Tailwind</p>
+      <p>Gestión de eventos, tareas y recordatorios con calendario interactivo.</p>
+      <p class="login">Cuenta demo / Demo account: <code>demo@eventflow.demo</code> · <code>demo1234</code></p>
+    </a>
+    <a class="card" href="dulce-encanto/">
+      <h2>Dulce Encanto</h2>
+      <p class="stack">PHP · MySQL · Bootstrap · JavaScript</p>
+      <p>Web de pastelería con catálogo de productos y panel de administración.</p>
+      <p class="login">Admin (<code>/dulce-encanto/admin/login.php</code>): <code>demo</code> · <code>demo1234</code></p>
+    </a>
+    <a class="card" href="malaga-supercars/">
+      <h2>Malaga Supercars</h2>
+      <p class="stack">HTML · CSS · PHP · MySQL</p>
+      <p>Catálogo de vehículos con filtros de búsqueda y persistencia en MySQL.</p>
+      <p class="login">Usuario demo / Demo user: <code>juanperez@example.com</code> · <code>contraseña123</code></p>
+    </a>
+    <a class="card" href="happy-paws/">
+      <h2>Happy Paws</h2>
+      <p class="stack">HTML · CSS · JavaScript</p>
+      <p>Landing page para servicios de mascotas, con slider y galería.</p>
+    </a>
+  </div>
+
+  <footer>Si la página tarda ~1 minuto en responder la primera vez, es el servidor gratuito despertando. / If the first load takes ~1 minute, the free server is waking up.</footer>
+</main>
+</body>
+</html>

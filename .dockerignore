@@ -1,0 +1,7 @@
+.git
+**/node_modules
+**/.DS_Store
+Projects/World
+Projects/Portfolio
+deploy/dist
+deploy/docker
