@@ -8,7 +8,7 @@
   <div style="max-width:600px;margin:0 auto;background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
     <!-- Cabecera con logo -->
     <div style="background-color:#007acc;padding:20px;text-align:center;">
-      <img src="https://lautidev.com/EventFlow/assets/img/logos/logo.png"
+      <img src="../assets/img/logos/logo.png"
            alt="EventFlow"
            style="max-width:140px;background-color:white;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.1);" />
     </div>

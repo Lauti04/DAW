@@ -203,6 +203,26 @@ def test_happypaws(base, write):
         check(f"asset loads: {asset}", c.get(asset)[0] == 200)
 
 
+def test_isolation(eventflow, dulce):
+    print(f"\nLogin isolation between apps")
+    ef_email, ef_pw = DEMO_LOGIN["eventflow"]
+    du_user, du_pw = DEMO_LOGIN["dulce"]
+
+    only_dulce = Client(dulce)
+    only_dulce.post("admin/login.php", {"username": du_user, "password": du_pw})
+    other = Client(eventflow)
+    other.opener = only_dulce.opener  # same "browser", different app
+    status = other.get("backend/api/eventos.php")[0]
+    check("signing in to Dulce Encanto does not sign you in to EventFlow", status != 200, f"HTTP {status}")
+
+    only_ef = Client(eventflow)
+    only_ef.post("backend/auth/login.php", {"email": ef_email, "password": ef_pw})
+    other = Client(dulce)
+    other.opener = only_ef.opener
+    status = other.get("admin/admin.php")[0]
+    check("signing in to EventFlow does not open the Dulce Encanto admin", status in (301, 302), f"HTTP {status}")
+
+
 # --------------------------------------------------------------------------------------------
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -226,6 +246,9 @@ def main():
             global failures
             failures += 1
             print(f"  FAIL  could not run tests for {key}: {e}")
+
+    if not a.only and urllib.parse.urlparse(a.eventflow).netloc == urllib.parse.urlparse(a.dulce).netloc:
+        test_isolation(a.eventflow, a.dulce)  # only meaningful when the apps share one host, like the hub
 
     print(f"\n{'ALL CHECKS PASSED' if not failures else f'{failures} CHECK(S) FAILED'}")
     sys.exit(1 if failures else 0)

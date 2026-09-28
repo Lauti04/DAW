@@ -20,7 +20,8 @@ docker build -f deploy/Dockerfile -t daw-demo-hub .
 docker run --rm -p 8080:8080 daw-demo-hub          # http://localhost:8080
 python3 deploy/smoke_test.py --eventflow http://localhost:8080/eventflow \
   --dulce http://localhost:8080/dulce-encanto --malaga http://localhost:8080/malaga-supercars \
-  --happypaws http://localhost:8080/happy-paws      # 55 checks, all should PASS
+  --happypaws http://localhost:8080/happy-paws      # 57 checks, all should PASS
+python3 deploy/link_check.py http://localhost:8080 --auth --external   # routing / broken-link crawl
 ```
 
 Per-app containers that mirror a normal shared host (handy while developing):
@@ -63,6 +64,25 @@ python3 deploy/smoke_test.py --eventflow https://<name>.onrender.com/eventflow \
 ```
 Tests that write data are skipped on non-local URLs unless you add `--write`. The first request can
 take a minute (cold start).
+
+Check every link, image, stylesheet and redirect in all four apps (public pages only, no logins, nothing
+is written):
+
+```bash
+python3 deploy/link_check.py https://<name>.onrender.com
+```
+
+Add `--auth` to also sign in with the demo accounts and crawl the logged-in pages, and `--external` to
+verify the CDN files and hotlinked images. It reports links that 404, links pointing at `localhost`,
+paths that escape an app's folder, and protected pages that send logged-out visitors somewhere broken.
+
+## Apps share one domain, not one login
+
+All four apps live on the same domain and use the same session key, so the Apache config gives each
+its own session cookie (`EVENTFLOWSESS`, `DULCEENCANTOSESS`, `MALAGASESS`, each limited to its own
+folder). Without that, signing in to one app would silently sign you in to another.
+Paths inside the apps must stay **relative** (`../backend/...`, `MalagaSupercarsHome.php`): an app
+can't assume it sits at `/` or has a particular folder name.
 
 ## How credentials are handled
 
